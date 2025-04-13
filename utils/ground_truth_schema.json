@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["points", "all_texts"],
+  "properties": {
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "description", "keywords", "fetched_texts", "selected_texts", "evaluated"],
+        "properties": {
+          "id": {"type": "integer"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "keywords": {"type": "array", "items": {"type": "string"}},
+          "fetched_texts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "text", "source"],
+              "properties": {
+                "id": {"type": "integer"},
+                "text": {"type": "string"},
+                "source": {"type": "string"}
+              }
+            }
+          },
+          "selected_texts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "text", "source"],
+              "properties": {
+                "id": {"type": "integer"},
+                "text": {"type": "string"},
+                "source": {"type": "string"}
+              }
+            }
+          },
+          "evaluated": {"type": "boolean"}
+        }
+      }
+    },
+    "all_texts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "properties": {
+          "id": {"type": "integer"},
+          "text": {"type": "string"}
+        }
+      }
+    }
+  }
+}
