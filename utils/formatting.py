@@ -48,7 +48,7 @@ def _replace_table(match: re.Match) -> str:
 
     # --- Build HTML ---
     html_rows = []
-    html_rows.append('<table border="1" style="border-collapse: collapse; width: 100%;">')
+    html_rows.append('<table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed;">')
 
     # Header Row
     html_rows.append('  <thead>')
@@ -56,7 +56,7 @@ def _replace_table(match: re.Match) -> str:
     for cell in header_cells:
         # Removed alignment style
         # Allow existing spans in header
-        html_rows.append(f'      <th>{cell}</th>')
+        html_rows.append(f'      <th style="text-align: left;">{cell}</th>')
     html_rows.append('    </tr>')
     html_rows.append('  </thead>')
 
@@ -72,10 +72,10 @@ def _replace_table(match: re.Match) -> str:
             if i < len(data_cells):
                 cell_content = data_cells[i]
                 # Allow existing spans in data cells
-                html_rows.append(f'      <td>{cell_content}</td>')
+                html_rows.append(f'      <td style="text-align: left;">{cell_content}</td>')
             else:
                 # Add empty cell if data row is shorter than header
-                html_rows.append(f'      <td></td>')
+                html_rows.append(f'      <td style="text-align: left;"></td>')
         html_rows.append('    </tr>')
     html_rows.append('  </tbody>')
 
