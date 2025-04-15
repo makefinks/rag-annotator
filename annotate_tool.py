@@ -183,7 +183,9 @@ class AnnotationApp(QWidget):
         super().__init__()
         self.data_file_path = data_file_path
         self.ground_truth_data = ground_truth_data 
-        self.points = self.ground_truth_data.get("points", [])
+        # Ensure points exists in ground_truth_data
+        if "points" not in self.ground_truth_data:
+            self.ground_truth_data["points"] = []
         self.current_point_index = None
 
         self.setWindowTitle(
@@ -225,10 +227,10 @@ class AnnotationApp(QWidget):
         self._apply_stylesheet()
 
         # --- Load Initial Point ---
-        if self.points:
+        if self.ground_truth_data["points"]:
             # Find first non-evaluated point or default to first point
             self.current_point_index = next(
-                (i for i, point in enumerate(self.points) if not point.get("evaluated", False)),
+                (i for i, point in enumerate(self.ground_truth_data["points"]) if not point.get("evaluated", False)),
                 0
             )
             self._load_point(self.current_point_index)
@@ -301,20 +303,30 @@ class AnnotationApp(QWidget):
     def _remove_point(self):
         """Removes the current evaluation point from the ground truth without confirmation"""
         
-        if self.current_point_index is None or not self.points:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             logger.error("No point selected to remove")
             return
             
         current_index = self.current_point_index
 
         logger.info(f"Removing point at index {current_index}")  
-        logger.info(str(self.points))
-        # remove points from truth and state
-        del self.ground_truth_data["points"][current_index]
-        del self.points[current_index]
+        logger.info(str(self.ground_truth_data["points"]))
+        
+        # Verify the index is valid before removing
+        if current_index < 0 or current_index >= len(self.ground_truth_data["points"]):
+            logger.error(f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points'])-1}")
+            return
+            
+        # Remove point from ground truth data
+        try:
+            del self.ground_truth_data["points"][current_index]
+            logger.info(f"Successfully removed point at index {current_index}")
+        except Exception as e:
+            logger.error(f"Error removing point: {e}")
+            return
 
         # Handle index adjustment after removal
-        if len(self.points) == 0:
+        if len(self.ground_truth_data["points"]) == 0:
             # No more points left
             logger.info("All points removed")
             self.current_point_index = None
@@ -325,8 +337,8 @@ class AnnotationApp(QWidget):
             self.remove_point_button.setEnabled(False)
         else:
             # Adjust index if we removed the last point
-            if current_index >= len(self.points):
-                self.current_point_index = len(self.points) - 1
+            if current_index >= len(self.ground_truth_data["points"]):
+                self.current_point_index = len(self.ground_truth_data["points"]) - 1
             else:
                 self.current_point_index = current_index
                 
@@ -454,19 +466,19 @@ class AnnotationApp(QWidget):
     # --- UI Population ---
     def _load_point(self, point_index):
         """Populates the UI with data from the specified point index."""
-        if not self.points or point_index < 0 or point_index >= len(self.points):
+        if not self.ground_truth_data["points"] or point_index < 0 or point_index >= len(self.ground_truth_data["points"]):
             logger.warning(f"Error: Point index {point_index} is out of range.")
             return
 
         self.current_point_index = point_index
-        point_data = self.points[point_index]
+        point_data = self.ground_truth_data["points"][point_index]
 
         # --- Clear existing UI elements ---
         self.clear_layout(self.left_list_layout)
 
         # --- Populate Top Panel ---
         self.position_label.setText(
-            f"Point {point_index + 1} of {len(self.points)}"
+            f"Point {point_index + 1} of {len(self.ground_truth_data['points'])}"
         )
 
         self._populate_combo_box(point_index)
@@ -527,7 +539,7 @@ class AnnotationApp(QWidget):
         # Block signals to prevent triggering navigation when we set the index inside the combo box
         self.title_navigator.blockSignals(True)
         self.title_navigator.clear()
-        for idx, p_data in enumerate(self.points):
+        for idx, p_data in enumerate(self.ground_truth_data["points"]):
             title = p_data.get("title", f"Point {idx + 1}")
             is_eval = p_data.get("evaluated", False)
             prefix = "✓ " if is_eval else ""
@@ -578,7 +590,7 @@ class AnnotationApp(QWidget):
     @Slot()
     def navigate_previous(self):
         logger.info("Navigate Previous clicked")
-        if self.current_point_index is None or not self.points:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             return
 
         if self.current_point_index > 0:
@@ -591,10 +603,10 @@ class AnnotationApp(QWidget):
     def confirm_point(self):
         """Toggles the 'evaluated' state of the current point."""
         logger.info("Confirm/Unconfirm clicked")
-        if self.current_point_index is None or not self.ground_truth_data:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             return
 
-        point_data = self.points[self.current_point_index]
+        point_data = self.ground_truth_data["points"][self.current_point_index]
 
         # Toggle the evaluated state / reverse if already evaluated
         current_state = point_data.get("evaluated", False)
@@ -615,10 +627,10 @@ class AnnotationApp(QWidget):
     @Slot()
     def navigate_next(self):
         logger.info("Navigate Next clicked")
-        if self.current_point_index is None or not self.points:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             return
 
-        if self.current_point_index < len(self.points) - 1:
+        if self.current_point_index < len(self.ground_truth_data["points"]) - 1:
             # Save current state before navigating
             self._save_ground_truth()
             # Load next
@@ -645,11 +657,11 @@ class AnnotationApp(QWidget):
         """
         Performs a BM25 search based on the input from the search bar and displays the results on the right panel
         """
-        if self.current_point_index is None or not self.ground_truth_data:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             logger.warning("No current point selected.")
             return
 
-        point_data = self.points[self.current_point_index]
+        point_data = self.ground_truth_data["points"][self.current_point_index]
 
         # clear previous results
         self.clear_layout(self.right_list_layout)
@@ -717,12 +729,12 @@ class AnnotationApp(QWidget):
         If the item is already selected, it removes it (deselects).
         Does nothing if the current point is marked as 'evaluated'.
         """
-        if self.current_point_index is None or not self.ground_truth_data:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             return
         if not isinstance(item_widget, ListItemWidget):
             return
 
-        point_data = self.points[self.current_point_index]
+        point_data = self.ground_truth_data["points"][self.current_point_index]
         if point_data.get("evaluated", False):
             logger.warning("Cannot modify evaluated point.")
             return  # Don't allow changes if evaluated
@@ -773,12 +785,12 @@ class AnnotationApp(QWidget):
         if it was selected.
         Does nothing if the current point is marked as 'evaluated'.
         """
-        if self.current_point_index is None or not self.ground_truth_data:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             return
         if not isinstance(item_widget, ListItemWidget):
             return
 
-        point_data = self.points[self.current_point_index]
+        point_data = self.ground_truth_data["points"][self.current_point_index]
         if point_data.get("evaluated", False):
             logger.warning("Cannot modify evaluated point.")
             return  # Don't allow changes if evaluated
@@ -819,12 +831,12 @@ class AnnotationApp(QWidget):
         Adds the item to the 'fetched_texts' list in the data model and to the left panel UI.
         Does nothing if the current point is marked as 'evaluated'.
         """
-        if self.current_point_index is None or not self.ground_truth_data:
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
             return
         if not isinstance(item_widget, ListItemWidget):
             return
 
-        point_data = self.points[self.current_point_index]
+        point_data = self.ground_truth_data["points"][self.current_point_index]
         if point_data.get("evaluated", False):
             logger.warning("Cannot modify evaluated point.")
             return  # Don't allow changes if evaluated
