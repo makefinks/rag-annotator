@@ -286,11 +286,36 @@ class AnnotationApp(QWidget):
         top_panel_layout.addWidget(top_group_title)
         top_panel_layout.addWidget(top_group_desc, stretch=1)
 
+        # Add A button to remove points fully 
+        self.remove_point_button = QPushButton("Remove")
+        self.remove_point_button.clicked.connect(self._remove_point)
+        top_panel_layout.addWidget(self.remove_point_button)
+
         # Add the horizontal layout to the main layout
         self.main_layout.addLayout(top_panel_layout)
 
         # Ensure the top panels don't stretch vertically
         self.main_layout.setStretchFactor(top_panel_layout, 0)
+
+            
+    def _remove_point(self):
+        """Removes the current evaluation point from the ground truth"""
+       
+        current_index = self.current_point_index
+
+        # remove points from truth and state
+        del self.ground_truth_data["points"][current_index]
+        del self.points[current_index]
+
+        if self.current_point_index == len(self.points+1) and len(self.points) > 0:
+            self.current_point_index -= 1
+        else:
+            logger.error("No more points")
+
+        self._load_point(self.current_point_index)
+
+        # update the ground truth
+        self._save_ground_truth()
 
     def _create_left_panel(self):
         """Creates the left panel containing the scrollable list of fetched text items."""
