@@ -7,5 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
     "jsonschema>=4.23.0",
     "pyside6>=6.9.0",
+    "pyside6-stubs>=6.7.3.0",
     "rank-bm25>=0.2.2",
 ]

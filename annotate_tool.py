@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, Slot
 from jsonschema import ValidationError
 from utils.search.bm25_handler import get_or_build_index, extract_texts_from_ground_truth
+from utils.formatting import format_md_table_to_html
 from utils.validation import validate_ground_truth
 
 
@@ -494,6 +495,8 @@ class AnnotationApp(QWidget):
             # Highlight keywords
             highlighted_text = self._highlight_keywords(text, keywords)
 
+            formatted_text = format_md_table_to_html(highlighted_text)
+
             # Check if this item is selected
             is_selected = any(
                 sel_item.get("id") == item_id
@@ -502,7 +505,7 @@ class AnnotationApp(QWidget):
 
             # Add item to the left panel
             item_widget = self.add_item_to_left_panel(
-                item_id, highlighted_text, source
+                item_id, formatted_text, source
             )
 
             # Set initial selected state
