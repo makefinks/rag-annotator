@@ -183,9 +183,6 @@ class AnnotationApp(QWidget):
         super().__init__()
         self.data_file_path = data_file_path
         self.ground_truth_data = ground_truth_data 
-        # Ensure points exists in ground_truth_data
-        if "points" not in self.ground_truth_data:
-            self.ground_truth_data["points"] = []
         self.current_point_index = None
 
         self.setWindowTitle(
@@ -308,22 +305,13 @@ class AnnotationApp(QWidget):
             return
             
         current_index = self.current_point_index
-
-        logger.info(f"Removing point at index {current_index}")  
-        logger.info(str(self.ground_truth_data["points"]))
         
         # Verify the index is valid before removing
         if current_index < 0 or current_index >= len(self.ground_truth_data["points"]):
             logger.error(f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points'])-1}")
             return
             
-        # Remove point from ground truth data
-        try:
-            del self.ground_truth_data["points"][current_index]
-            logger.info(f"Successfully removed point at index {current_index}")
-        except Exception as e:
-            logger.error(f"Error removing point: {e}")
-            return
+        del self.ground_truth_data["points"][current_index]
 
         # Handle index adjustment after removal
         if len(self.ground_truth_data["points"]) == 0:
@@ -344,9 +332,7 @@ class AnnotationApp(QWidget):
                 
             # Load the point at the adjusted index
             self._load_point(self.current_point_index)
-            # we also need to repopulate the title navigator
-            self._populate_combo_box(self.current_point_index)
-
+            
         # update the ground truth
         self._save_ground_truth()
 
@@ -525,7 +511,7 @@ class AnnotationApp(QWidget):
 
         # --- Update Button States ---
         self.prev_button.setEnabled(point_index > 0)
-        self.next_button.setEnabled(point_index < len(self.points) - 1)
+        self.next_button.setEnabled(point_index < len(self.ground_truth_data["points"]) - 1)
         # Confirm button is always enabled, but text changes
         self.confirm_button.setText("Unconfirm" if is_evaluated else "Confirm")
 
