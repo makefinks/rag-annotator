@@ -48,15 +48,15 @@ def _replace_table(match: re.Match) -> str:
 
     # --- Build HTML ---
     html_rows = []
-    html_rows.append('<table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed;">')
+    # Use !important to override any stylesheet rules
+    html_rows.append('<table style="border: 1px solid #666666 !important; border-collapse: collapse !important; width: 100%; table-layout: fixed;">')
 
     # Header Row
     html_rows.append('  <thead>')
     html_rows.append('    <tr>')
     for cell in header_cells:
-        # Removed alignment style
-        # Allow existing spans in header
-        html_rows.append(f'      <th style="text-align: left;">{cell}</th>')
+        # Use !important to ensure borders are visible
+        html_rows.append(f'      <th style="border: 1px solid #666666 !important; text-align: left; padding: 4px !important;">{cell}</th>')
     html_rows.append('    </tr>')
     html_rows.append('  </thead>')
 
@@ -68,14 +68,13 @@ def _replace_table(match: re.Match) -> str:
         data_cells = _parse_md_line(line)
         html_rows.append('    <tr>')
         for i in range(num_columns): # Iterate based on header columns
-            # Removed alignment style
             if i < len(data_cells):
                 cell_content = data_cells[i]
-                # Allow existing spans in data cells
-                html_rows.append(f'      <td style="text-align: left;">{cell_content}</td>')
+                # Use !important to ensure borders are visible
+                html_rows.append(f'      <td style="border: 1px solid #666666 !important; text-align: left; padding: 4px !important;">{cell_content}</td>')
             else:
                 # Add empty cell if data row is shorter than header
-                html_rows.append(f'      <td style="text-align: left;"></td>')
+                html_rows.append(f'      <td style="border: 1px solid #666666 !important; text-align: left; padding: 4px !important;"></td>')
         html_rows.append('    </tr>')
     html_rows.append('  </tbody>')
 
