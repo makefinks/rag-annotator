@@ -299,20 +299,37 @@ class AnnotationApp(QWidget):
 
             
     def _remove_point(self):
-        """Removes the current evaluation point from the ground truth"""
-       
+        """Removes the current evaluation point from the ground truth without confirmation"""
+        
+        if self.current_point_index is None or not self.points:
+            logger.error("No point selected to remove")
+            return
+            
         current_index = self.current_point_index
 
         # remove points from truth and state
         del self.ground_truth_data["points"][current_index]
         del self.points[current_index]
 
-        if self.current_point_index == len(self.points+1) and len(self.points) > 0:
-            self.current_point_index -= 1
+        # Handle index adjustment after removal
+        if len(self.points) == 0:
+            # No more points left
+            logger.info("All points removed")
+            self.current_point_index = None
+            self.point_description_label.setText("No points remaining.")
+            self.prev_button.setEnabled(False)
+            self.next_button.setEnabled(False)
+            self.confirm_button.setEnabled(False)
+            self.remove_point_button.setEnabled(False)
         else:
-            logger.error("No more points")
-
-        self._load_point(self.current_point_index)
+            # Adjust index if we removed the last point
+            if current_index >= len(self.points):
+                self.current_point_index = len(self.points) - 1
+            else:
+                self.current_point_index = current_index
+                
+            # Load the point at the adjusted index
+            self._load_point(self.current_point_index)
 
         # update the ground truth
         self._save_ground_truth()
