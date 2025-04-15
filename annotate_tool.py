@@ -307,6 +307,8 @@ class AnnotationApp(QWidget):
             
         current_index = self.current_point_index
 
+        logger.info(f"Removing point at index {current_index}")  
+        logger.info(str(self.points))
         # remove points from truth and state
         del self.ground_truth_data["points"][current_index]
         del self.points[current_index]
@@ -330,6 +332,8 @@ class AnnotationApp(QWidget):
                 
             # Load the point at the adjusted index
             self._load_point(self.current_point_index)
+            # we also need to repopulate the title navigator
+            self._populate_combo_box(self.current_point_index)
 
         # update the ground truth
         self._save_ground_truth()
@@ -465,19 +469,7 @@ class AnnotationApp(QWidget):
             f"Point {point_index + 1} of {len(self.points)}"
         )
 
-        # --- Populate Title Navigator ---
-        # Block signals to prevent triggering navigation when we set the index inside the combo box
-        self.title_navigator.blockSignals(True)
-        self.title_navigator.clear()
-        for idx, p_data in enumerate(self.points):
-            title = p_data.get("title", f"Point {idx + 1}")
-            is_eval = p_data.get("evaluated", False)
-            prefix = "✓ " if is_eval else ""
-            self.title_navigator.addItem(f"{prefix}{title}", userData=idx) 
-            
-        # Set the current item in the navigator without triggering the signal
-        self.title_navigator.setCurrentIndex(point_index)
-        self.title_navigator.blockSignals(False) 
+        self._populate_combo_box(point_index)
 
         # --- Populate Description ---
         keywords = point_data.get("keywords", [])
@@ -529,6 +521,21 @@ class AnnotationApp(QWidget):
         self._set_left_panel_enabled(
             not is_evaluated
         )  # Pass True if NOT evaluated (i.e., enabled)
+
+    def _populate_combo_box(self, point_index: int):
+        # --- Populate Title Navigator ---
+        # Block signals to prevent triggering navigation when we set the index inside the combo box
+        self.title_navigator.blockSignals(True)
+        self.title_navigator.clear()
+        for idx, p_data in enumerate(self.points):
+            title = p_data.get("title", f"Point {idx + 1}")
+            is_eval = p_data.get("evaluated", False)
+            prefix = "✓ " if is_eval else ""
+            self.title_navigator.addItem(f"{prefix}{title}", userData=idx) 
+            
+        # Set the current item in the navigator without triggering the signal
+        self.title_navigator.setCurrentIndex(point_index)
+        self.title_navigator.blockSignals(False) 
 
     def _set_left_panel_enabled(self, enabled):
         """Enable or disable all ListItemWidgets in the left panel."""
