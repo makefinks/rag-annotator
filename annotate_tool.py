@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, Slot
 from jsonschema import ValidationError
 from utils.search.bm25_handler import get_or_build_index, extract_texts_from_ground_truth
-from utils.formatting import format_md_table_to_html
+from utils.formatting import format_md_text_to_html
 from utils.validation import validate_ground_truth
 
 
@@ -495,7 +495,7 @@ class AnnotationApp(QWidget):
             # Highlight keywords
             highlighted_text = self._highlight_keywords(text, keywords)
 
-            formatted_text = format_md_table_to_html(highlighted_text)
+            formatted_text = format_md_text_to_html(highlighted_text)
 
             # Check if this item is selected
             is_selected = any(
@@ -668,7 +668,8 @@ class AnnotationApp(QWidget):
         logger.info(f"Performing BM25 search with query: {search_query}")
 
         # Perform the search using the BM25 index
-        results = self.bm25_index.get_top_n(search_query, self.bm25_texts, n=10)
+        # TODO: Make search more configurable
+        results = self.bm25_index.get_top_n(search_query, self.bm25_texts, n=20)
 
         logger.info(f"Found {len(results)} BM25 search results")
 
@@ -681,6 +682,7 @@ class AnnotationApp(QWidget):
             return
 
         used_ids = [item["id"] for item in point_data.get("fetched_texts", []) if item.get("id") is not None]
+
         # Add each result to the right panel
         for i, result_text in enumerate(results):
 
@@ -691,12 +693,15 @@ class AnnotationApp(QWidget):
             if actual_id in used_ids:
                 continue
 
-            # Highlight keywords in the result text
-            highlighted_text = self._highlight_keywords(result_text, keywords)
-
+            
+            highlighted_text = self._highlight_keywords(
+                result_text,
+                keywords + search_query.split() if len(search_query.split()) == 1 else keywords
+            )
+            formatted_text = format_md_text_to_html(highlighted_text)
             # create the widget for the result
             item_widget = ListItemWidget(
-                actual_id, highlighted_text, "bm25-appended", "Add"
+                actual_id, formatted_text, "bm25-appended", "Add"
             )
 
             # Connect the button click to add this result to fetched_texts

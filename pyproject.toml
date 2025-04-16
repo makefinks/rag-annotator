@@ -5,8 +5,11 @@ description = "Annotation Tool for determining relevant text parts based on text
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "beautifulsoup4>=4.13.4",
     "jsonschema>=4.23.0",
+    "markdown>=3.8",
     "pyside6>=6.9.0",
     "pyside6-stubs>=6.7.3.0",
     "rank-bm25>=0.2.2",
+    "spacy>=3.8.5",
 ]
