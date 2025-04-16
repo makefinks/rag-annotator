@@ -58,7 +58,7 @@ class ListItemWidget(QFrame):
         "default": "#000000",
     }
 
-    def __init__(self, item_id, text, source, button_text, parent=None):
+    def __init__(self, item_id, text, source, button_text, metadata, parent=None):
         super().__init__(parent)
         self.item_id = item_id
         self.source = source
@@ -78,6 +78,8 @@ class ListItemWidget(QFrame):
         self.source_label.setStyleSheet(
             f"background-color: {source_bg_color}; color: {source_text_color}; padding: 2px 4px; border-radius: 3px; font-size: 8pt;"
         )
+        # add metadata hover
+        self.source_label.setToolTip(f"Metadata: {metadata}")
 
         # Vertically align
         self.source_label.setMinimumWidth(85)
@@ -94,6 +96,7 @@ class ListItemWidget(QFrame):
         self.button = QPushButton(button_text)
         self.button.clicked.connect(self._emit_button_clicked)
         self.button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
 
         item_layout.addWidget(self.source_label)
         item_layout.addWidget(self.label)
@@ -487,6 +490,7 @@ class AnnotationApp(QWidget):
             item_id = item_data.get("id")
             text = item_data.get("text", "")
             source = item_data.get("source", "unknown")
+            metadata = item_data.get("metadata", {})
 
             if item_id is None:
                 logger.warning("Found fetched_text item without an ID. Skipping.")
@@ -505,7 +509,7 @@ class AnnotationApp(QWidget):
 
             # Add item to the left panel
             item_widget = self.add_item_to_left_panel(
-                item_id, formatted_text, source
+                item_id, formatted_text, source, metadata
             )
 
             # Set initial selected state
@@ -701,7 +705,7 @@ class AnnotationApp(QWidget):
             formatted_text = format_md_text_to_html(highlighted_text)
             # create the widget for the result
             item_widget = ListItemWidget(
-                actual_id, formatted_text, "bm25-appended", "Add"
+                actual_id, formatted_text, "bm25-appended", "Add", None
             )
 
             # Connect the button click to add this result to fetched_texts
@@ -870,9 +874,9 @@ class AnnotationApp(QWidget):
         # Note: Saving happens on navigation or confirm
 
     # --- Helper Methods ---
-    def add_item_to_left_panel(self, item_id, text, source):
+    def add_item_to_left_panel(self, item_id, text, source, metadata):
         """Adds a fetched text item widget to the left scrollable list."""
-        item_widget = ListItemWidget(item_id, text, source, "Remove")
+        item_widget = ListItemWidget(item_id, text, source, "Remove", metadata)
 
         # Connect the REMOVE button signal
         item_widget.button_clicked_signal.connect(self.remove_fetched_text)

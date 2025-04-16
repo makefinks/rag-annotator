@@ -14,8 +14,11 @@
             "fetched_texts": [
                 {
                     "id": 1,
-                    "text": "Proposal suggests implementing **AGVs** (Automated Guided Vehicles) for material transport between stations 3 and 4 on Line A. This change is projected to yield an estimated cycle time reduction of approximately 5%. \n\nHere is a comparison of the key metrics:\n\n| Metric         | Current Value | Projected Value (Post-AGV) |\n| :------------- | :-----------: | :------------------------: |\n| Cycle Time (CT)| 55 seconds    | 52 seconds                 |\n\nHowever, it's crucial to note that this *Requires significant infrastructure change*, including potential floor modifications and integration with the central control system. Further considerations involve potential bottleneck shifts downstream and the need for robust safety protocols. Concerns about integration with the existing Manufacturing Execution System (MES) must be addressed during the planning phase to ensure seamless data flow and operational visibility. The automation level increase is significant.",
-                    "source": "llm"
+                    "text": "Proposal suggests implementing **AGVs** (Automated Guided Vehicles) for material transport between stations 3 and 4 on Line A. This change is projected to yield an estimated cycle time reduction of approximately 5%. \n\nHowever, it's crucial to note that this *Requires significant infrastructure change*, including potential floor modifications and integration with the central control system. \n\n Key metrics comparison:\n - Current cycle time (CT): 55 seconds per unit\n - Projected CT post-AGV: 52 seconds per unit\n\nFurther considerations involve potential bottleneck shifts downstream and the need for robust safety protocols. Concerns about integration with the existing Manufacturing Execution System (MES) must be addressed during the planning phase to ensure seamless data flow and operational visibility. The automation level increase is significant.",
+                    "source": "llm",
+                    "metadata": {
+                        "description": "This proposal outlines the implementation of AGVs for material transport between stations 3 and 4 on Line A, highlighting the projected cycle time reduction and necessary infrastructure changes."
+                    }
                 },
                 {
                     "id": 2,
@@ -24,7 +27,7 @@
                 },
                 {
                     "id": 3,
-                    "text": "Increased automation levels on competitor lines show average throughput gains of 10-15%. However, initial investment costs are substantial. Our current approach focuses on incremental improvements to avoid large capital expenditure. Station 5 bottleneck remains primary concern.\n\nComparison with Competitor Automation:\n\n| Area        | Competitor Avg. Gain | Our Current Focus       | Key Concern       |\n| :---------- | :------------------: | :---------------------- | :---------------- |\n| Throughput  | 10-15%               | Incremental Improvement | Station 5 Bottleneck |\n| Investment  | Substantial          | Avoid Large CapEx       | Cost vs. Benefit  |\n",
+                    "text": "Increased automation levels on competitor lines show average throughput gains of 10-15%. However, initial investment costs are substantial. Our current approach focuses on incremental improvements to avoid large capital expenditure. Station 5 bottleneck remains primary concern.",
                     "source": "both"
                 },
                 {
@@ -120,17 +123,17 @@
             "fetched_texts": [
                 {
                     "id": 1,
-                    "text": "Recent audit of Supplier X (Tier 1, battery cells) revealed minor non-conformances in quality control documentation. Corrective action plan requested. No immediate production impact, but elevates long-term supplier risk. \n\nAudit Summary - Supplier X:\n\n| Finding Category          | Status             | Action Required          | Risk Level |\n| :------------------------ | :----------------- | :----------------------- | :--------- |\n| QC Documentation          | Minor Non-Conformance | Corrective Action Plan | Medium     |\n| Production Process        | Conforming         | None                     | Low        |\n\n**Follow-up audit scheduled for Q4.**",
+                    "text": "Recent audit of Supplier X (Tier 1, battery cells) revealed minor non-conformances in quality control documentation. Corrective action plan requested. No immediate production impact, but elevates long-term supplier risk. **Follow-up audit scheduled for Q4.**",
                     "source": "bm25-appended"
                 },
                 {
                     "id": 2,
-                    "text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\nKey mitigation strategies include:\n\n| Mitigation Strategy        | Target Component        | Status/Notes                     |\n| :------------------------- | :---------------------- | :------------------------------- |\n| Dual-Sourcing Agreements   | Key MCUs                | Actively pursuing                |\n| Alternative Architectures  | Less susceptible parts  | Research initiated               |\n\nThis proactive approach is vital for semiconductor supply resilience.",
+                    "text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
                     "source": "llm"
                 },
                 {
                     "id": 3,
-                    "text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. The current status and actions are summarized below:\n\n| Supplier   | Status        | Action                      | Potential Impact             |\n| :--------- | :------------ | :-------------------------- | :--------------------------- |\n| Supplier Y | Failed Audit  | Place on probation, find alt| BMS production within 6 mos |\n\nThis situation requires immediate attention to secure the supply chain for the battery management system.",
+                    "text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months.",
                     "source": "semantic"
                 },
                 {
@@ -144,8 +147,19 @@
                     "source": "bm25-appended"
                 }
             ],
-            "selected_texts": [],
-            "evaluated": false
+            "selected_texts": [
+                {
+                    "id": 2,
+                    "text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
+                    "source": "llm"
+                },
+                {
+                    "id": 3,
+                    "text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months.",
+                    "source": "semantic"
+                }
+            ],
+            "evaluated": true
         },
         {
             "id": 25,
@@ -239,7 +253,7 @@
         },
         {
             "id": 235,
-            "text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as <span style='background-color:rgba(255, 255, 0, 0.2);'>battery</span> packs and semiconductors. Effective <span style='background-color:rgba(255, 255, 0, 0.2);'>quality control</span> processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global <span style='background-color:rgba(255, 255, 0, 0.2);'>semiconductor</span> shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks."
+            "text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as battery packs and semiconductors. Effective quality control processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global semiconductor shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks."
         },
         {
             "id": 215,
