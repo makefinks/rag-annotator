@@ -354,9 +354,9 @@ class AnnotationApp(QWidget):
         left_groupbox.setMinimumWidth(300)
 
         # Scroll Area
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFrameShape(QFrame.NoFrame)
+        self.left_scroll_area = QScrollArea()
+        self.left_scroll_area.setWidgetResizable(True)
+        self.left_scroll_area.setFrameShape(QFrame.NoFrame)
 
         # Container widget inside ScrollArea
         self.left_list_widget = QWidget()
@@ -365,8 +365,8 @@ class AnnotationApp(QWidget):
         self.left_list_layout.setContentsMargins(0, 0, 0, 0)
         self.left_list_layout.setSpacing(5)
 
-        scroll_area.setWidget(self.left_list_widget)
-        left_outer_layout.addWidget(scroll_area)
+        self.left_scroll_area.setWidget(self.left_list_widget)
+        left_outer_layout.addWidget(self.left_scroll_area)
         # Allow the left panel to stretch horizontally within the middle layout.
         # Add to middle layout with stretch factor (wider panel)
         self.middle_layout.addWidget(left_groupbox, 1)
@@ -394,9 +394,9 @@ class AnnotationApp(QWidget):
         right_outer_layout.addLayout(search_layout)
 
         # Scroll Area for results
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFrameShape(QFrame.NoFrame)
+        self.right_scroll_area = QScrollArea()
+        self.right_scroll_area.setWidgetResizable(True)
+        self.right_scroll_area.setFrameShape(QFrame.NoFrame)
 
         # Container widget for results
         self.right_list_widget = QWidget()
@@ -405,8 +405,8 @@ class AnnotationApp(QWidget):
         self.right_list_layout.setContentsMargins(0, 0, 0, 0)
         self.right_list_layout.setSpacing(5)
 
-        scroll_area.setWidget(self.right_list_widget)
-        right_outer_layout.addWidget(scroll_area)
+        self.right_scroll_area.setWidget(self.right_list_widget)
+        right_outer_layout.addWidget(self.right_scroll_area)
         # Allow the right panel to stretch horizontally within the middle layout.
         self.middle_layout.addWidget(right_groupbox, 1)
 
@@ -488,6 +488,10 @@ class AnnotationApp(QWidget):
         self.clear_layout(self.left_list_layout)
         self.clear_layout(self.right_list_layout)
         self.search_input.setText("")
+
+        # also scroll both areas to the top
+        self.left_scroll_area.verticalScrollBar().setValue(0)
+        self.right_scroll_area.verticalScrollBar().setValue(0)
 
         # --- Populate Top Panel ---
         self.position_label.setText(
