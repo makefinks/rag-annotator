@@ -8,7 +8,7 @@ QGroupBox {
     border-radius: 5px;
     margin-top: 1ex; /* Space for title */
     font-weight: bold;
-    padding: 5px;
+    padding: 10px;
 }
 QGroupBox::title {
     subcontrol-origin: margin;
@@ -121,4 +121,16 @@ QScrollBar::handle:horizontal {
 QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
      width: 0px;
      background: none;
+}
+/* Hover effect for list items */
+ListItemWidget:hover {
+    background-color: #444444;
+}
+/* Improved tooltips */
+QToolTip {
+    background-color: #575757;
+    color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    padding: 5px;
+    border-radius: 3px;
 }

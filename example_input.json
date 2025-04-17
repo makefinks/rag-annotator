@@ -106,7 +106,13 @@
                     "source": "llm"
                 }
             ],
-            "selected_texts": [],
+            "selected_texts": [
+                {
+                    "id": 2,
+                    "text": "Detailed analysis of Line A performance data clearly indicates a major bottleneck at the chassis marriage station (Station 5). The current throughput of the entire line is significantly limited by the manual alignment process required at this stage. \n\nRecommendation: Initiate a feasibility study to investigate the implementation of a robotic arm solution equipped with an advanced vision system for automated alignment. \n\nPreliminary calculations suggest a _Potential Return on Investment (ROI)_ within 18 months, primarily driven by increased throughput and reduced labor costs associated with manual alignment. This automation step is critical. **See Appendix B for comprehensive technical specifications and cost breakdown.** Further analysis should model the impact on upstream and downstream cycle time.",
+                    "source": "semantic"
+                }
+            ],
             "evaluated": false
         },
         {

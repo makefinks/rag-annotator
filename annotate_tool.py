@@ -486,6 +486,8 @@ class AnnotationApp(QWidget):
 
         # --- Clear existing UI elements ---
         self.clear_layout(self.left_list_layout)
+        self.clear_layout(self.right_list_layout)
+        self.search_input.setText("")
 
         # --- Populate Top Panel ---
         self.position_label.setText(
