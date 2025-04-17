@@ -1,7 +1,7 @@
 import sys
 import json
 import os
-import re 
+import re
 import logging
 from PySide6.QtWidgets import (
     QApplication,
@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QSizePolicy,
     QMessageBox,
-    QComboBox 
+    QComboBox, QStyle
 )
 
 from PySide6.QtCore import Qt, Signal, Slot
@@ -46,7 +46,7 @@ class ListItemWidget(QFrame):
         "llm": "#AEC6CF",  # Pastel Blue
         "semantic": "#C1E1C1",  # Pale Green
         "bm25-appended": "#FFD8B1",  # Light Apricot
-        "both": "#FF0000",  # Bright Red 
+        "both": "#FF0000",  # Bright Red
         "default": "#E0E0E0",  # Default light gray
     }
 
@@ -54,7 +54,7 @@ class ListItemWidget(QFrame):
         "llm": "#000000",
         "semantic": "#000000",
         "bm25-appended": "#000000",
-        "both": "#000000",  
+        "both": "#000000",
         "default": "#000000",
     }
 
@@ -119,7 +119,7 @@ class ListItemWidget(QFrame):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self._emit_item_clicked()
-        super().mousePressEvent(event)  
+        super().mousePressEvent(event)
 
     def get_text(self):
         return self.original_text
@@ -154,8 +154,8 @@ class ListItemWidget(QFrame):
         base_style = (
             "border-radius: 3px; background-color: #383838; margin-bottom: 3px;"
         )
-        border_style = "border: 1px solid #555555;"  
-        text_color = "color: #E0E0E0;"  
+        border_style = "border: 1px solid #555555;"
+        text_color = "color: #E0E0E0;"
 
         # State-specific overrides
         if not self.isEnabled():
@@ -183,10 +183,10 @@ class AnnotationApp(QWidget):
     # Highlight color used for keywords within text descriptions and fetched texts.
     HIGHLIGHT_COLOR = "rgba(255, 255, 0, 0.2)"
 
-    def __init__(self, data_file_path, ground_truth_data): 
+    def __init__(self, data_file_path, ground_truth_data):
         super().__init__()
         self.data_file_path = data_file_path
-        self.ground_truth_data = ground_truth_data 
+        self.ground_truth_data = ground_truth_data
         self.current_point_index = None
 
         self.setWindowTitle(
@@ -209,6 +209,7 @@ class AnnotationApp(QWidget):
         self.bm25_texts = extract_texts_from_ground_truth(self.ground_truth_data)
 
         self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(15, 15, 15, 15)
         self.main_layout.setSpacing(10)
 
         # --- Top Panel (Point Description) ---
@@ -266,8 +267,8 @@ class AnnotationApp(QWidget):
 
         # Title Navigator (Dropdown)
         self.title_navigator = QComboBox()
-        self.title_navigator.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed) 
-        self.title_navigator.setStyleSheet("combobox-popup: 0;") 
+        self.title_navigator.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.title_navigator.setStyleSheet("combobox-popup: 0;")
         top_title_layout.addWidget(self.title_navigator)
         # Removed setSizePolicy for the group, let the combobox control expansion
         self.title_navigator.currentIndexChanged.connect(self._navigate_via_navigator)
@@ -289,10 +290,15 @@ class AnnotationApp(QWidget):
         top_panel_layout.addWidget(top_group_title)
         top_panel_layout.addWidget(top_group_desc, stretch=1)
 
-        # Add A button to remove points fully 
+        # Add A button to remove points fully
         self.remove_point_button = QPushButton("Remove")
         self.remove_point_button.clicked.connect(self._remove_point)
         top_panel_layout.addWidget(self.remove_point_button)
+        
+        # Add icon and tooltip to remove button
+        style = QApplication.style()
+        self.remove_point_button.setIcon(style.standardIcon(QStyle.SP_DialogCancelButton))
+        self.remove_point_button.setToolTip("Remove this point")
 
         # Add the horizontal layout to the main layout
         self.main_layout.addLayout(top_panel_layout)
@@ -300,21 +306,21 @@ class AnnotationApp(QWidget):
         # Ensure the top panels don't stretch vertically
         self.main_layout.setStretchFactor(top_panel_layout, 0)
 
-            
+
     def _remove_point(self):
         """Removes the current evaluation point from the ground truth without confirmation"""
-        
+
         if self.current_point_index is None or not self.ground_truth_data["points"]:
             logger.error("No point selected to remove")
             return
-            
+
         current_index = self.current_point_index
-        
+
         # Verify the index is valid before removing
         if current_index < 0 or current_index >= len(self.ground_truth_data["points"]):
             logger.error(f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points'])-1}")
             return
-            
+
         del self.ground_truth_data["points"][current_index]
 
         # Handle index adjustment after removal
@@ -333,10 +339,10 @@ class AnnotationApp(QWidget):
                 self.current_point_index = len(self.ground_truth_data["points"]) - 1
             else:
                 self.current_point_index = current_index
-                
+
             # Load the point at the adjusted index
             self._load_point(self.current_point_index)
-            
+
         # update the ground truth
         self._save_ground_truth()
 
@@ -344,6 +350,8 @@ class AnnotationApp(QWidget):
         """Creates the left panel containing the scrollable list of fetched text items."""
         left_groupbox = QGroupBox("Fetched Texts (Click to Select, Button to Remove)")
         left_outer_layout = QVBoxLayout(left_groupbox)
+        # Set a minimum width for the fetched texts panel
+        left_groupbox.setMinimumWidth(300)
 
         # Scroll Area
         scroll_area = QScrollArea()
@@ -355,20 +363,25 @@ class AnnotationApp(QWidget):
         self.left_list_layout = QVBoxLayout(self.left_list_widget)
         self.left_list_layout.setAlignment(Qt.AlignTop)
         self.left_list_layout.setContentsMargins(0, 0, 0, 0)
-        self.left_list_layout.setSpacing(5)  
+        self.left_list_layout.setSpacing(5)
 
-        scroll_area.setWidget(self.left_list_widget)  
-        left_outer_layout.addWidget(scroll_area)  
+        scroll_area.setWidget(self.left_list_widget)
+        left_outer_layout.addWidget(scroll_area)
         # Allow the left panel to stretch horizontally within the middle layout.
+        # Add to middle layout with stretch factor (wider panel)
         self.middle_layout.addWidget(left_groupbox, 1)
 
     def _create_right_panel(self):
         """Creates the right panel displaying the currently selected text items."""
         right_groupbox = QGroupBox("BM25 Search")
         right_outer_layout = QVBoxLayout(right_groupbox)
+        # Set a minimum width for the search panel
+        right_groupbox.setMinimumWidth(350)
 
         search_layout = QHBoxLayout()
         self.search_input = QLineEdit()
+        # Ensure search field has sufficient width
+        self.search_input.setMinimumWidth(200)
         self.search_input.setPlaceholderText("search field")
         self.search_button = QPushButton("Search")
 
@@ -405,6 +418,14 @@ class AnnotationApp(QWidget):
         self.prev_button = QPushButton("Previous")
         self.confirm_button = QPushButton("Confirm")
         self.next_button = QPushButton("Next")
+        # Add icons and tooltips for navigation buttons
+        style = QApplication.style()
+        self.prev_button.setIcon(style.standardIcon(QStyle.SP_ArrowLeft))
+        self.next_button.setIcon(style.standardIcon(QStyle.SP_ArrowRight))
+        self.confirm_button.setIcon(style.standardIcon(QStyle.SP_DialogApplyButton))
+        self.prev_button.setToolTip("Go to previous point")
+        self.next_button.setToolTip("Go to next point")
+        self.confirm_button.setToolTip("Toggle evaluation state")
 
         bottom_layout.addStretch()
         bottom_layout.addWidget(self.prev_button)
@@ -429,14 +450,14 @@ class AnnotationApp(QWidget):
             if not os.path.exists(css_file_path):
                 logger.error(f"Stylesheet file not found: {css_file_path}")
                 return
-                
+
             with open(css_file_path, "r") as f:
                 stylesheet = f.read()
-                
-            # Apply the stylesheet 
+
+            # Apply the stylesheet
             self.setStyleSheet(stylesheet)
             logger.info(f"Applied stylesheet from {css_file_path}")
-            
+
         except Exception as e:
             logger.error(f"Error applying stylesheet: {e}")
 
@@ -478,10 +499,10 @@ class AnnotationApp(QWidget):
         description = point_data.get("description", "No description provided.")
         highlighted_description = self._highlight_keywords(
             description, keywords
-        )  
+        )
         self.point_description_label.setText(
             highlighted_description
-        )  
+        )
 
         # --- Populate Left Panel (Fetched Texts) ---
         is_evaluated = point_data.get("evaluated", False)
@@ -536,11 +557,11 @@ class AnnotationApp(QWidget):
             title = p_data.get("title", f"Point {idx + 1}")
             is_eval = p_data.get("evaluated", False)
             prefix = "✓ " if is_eval else ""
-            self.title_navigator.addItem(f"{prefix}{title}", userData=idx) 
-            
+            self.title_navigator.addItem(f"{prefix}{title}", userData=idx)
+
         # Set the current item in the navigator without triggering the signal
         self.title_navigator.setCurrentIndex(point_index)
-        self.title_navigator.blockSignals(False) 
+        self.title_navigator.blockSignals(False)
 
     def _set_left_panel_enabled(self, enabled):
         """Enable or disable all ListItemWidgets in the left panel."""
@@ -557,7 +578,7 @@ class AnnotationApp(QWidget):
         Handles potential regex errors gracefully.
         """
         highlighted_text = text
-        if not keywords:  
+        if not keywords:
             return highlighted_text
 
         # Use word boundaries (\b) to match whole words only.
@@ -697,7 +718,7 @@ class AnnotationApp(QWidget):
             if actual_id in used_ids:
                 continue
 
-            
+
             highlighted_text = self._highlight_keywords(
                 result_text,
                 keywords + search_query.split() if len(search_query.split()) == 1 else keywords
@@ -760,7 +781,7 @@ class AnnotationApp(QWidget):
         )
 
         if not is_already_selected:
-            # Add a copy to selected_texts 
+            # Add a copy to selected_texts
             selected_texts.append(original_item_data.copy())
             item_widget.set_selected(True)  # Update visual state
             logger.info(f"Added item ID {item_id_to_add} to selected_texts.")
@@ -853,7 +874,7 @@ class AnnotationApp(QWidget):
         new_item = {
             "id": result_id,
             "text": result_text,
-            "source": "bm25-appended",  
+            "source": "bm25-appended",
         }
 
         # Add to fetched_texts in the data model
@@ -885,7 +906,7 @@ class AnnotationApp(QWidget):
 
         self.left_list_layout.addWidget(item_widget)
         return (
-            item_widget  
+            item_widget
         )
 
     def clear_layout(self, layout):
@@ -945,20 +966,20 @@ if __name__ == "__main__":
             data_file_path = selected_files[0]
             logger.info(f"Selected file: {data_file_path}")
 
-            # load and validate data 
+            # load and validate data
             ground_truth_data = load_and_validate_data(data_file_path)
 
             if ground_truth_data:
                 # launch app with valid data
                 window = AnnotationApp(
                     data_file_path=data_file_path,
-                    ground_truth_data=ground_truth_data 
+                    ground_truth_data=ground_truth_data
                 )
                 window.show()
                 sys.exit(app.exec())
             else:
                 logger.error("Exiting due to data loading/validation error.")
-                sys.exit(1) 
+                sys.exit(1)
         else:
             logger.info("No file selected.")
             sys.exit(0)
