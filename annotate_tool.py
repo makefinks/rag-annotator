@@ -58,7 +58,7 @@ class ListItemWidget(QFrame):
         "default": "#000000",
     }
 
-    def __init__(self, item_id, text, source, button_text, metadata, parent=None):
+    def __init__(self, item_id, text, source, button_text, metadata = None, parent=None):
         super().__init__(parent)
         self.item_id = item_id
         self.source = source
@@ -893,7 +893,7 @@ class AnnotationApp(QWidget):
         keywords = point_data.get("keywords", [])
         highlighted_text = self._highlight_keywords(result_text, keywords)
         self.add_item_to_left_panel(
-            result_id, highlighted_text, "bm25-appended"
+            result_id, highlighted_text, "bm25-appended", None
         )
 
         # remove from right panel
