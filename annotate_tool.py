@@ -17,7 +17,8 @@ from PySide6.QtWidgets import (
     QFrame,
     QSizePolicy,
     QMessageBox,
-    QComboBox, QStyle
+    QComboBox,
+    QStyle
 )
 
 from PySide6.QtCore import Qt, Signal, Slot
@@ -83,27 +84,27 @@ class ListItemWidget(QFrame):
 
         # Vertically align
         self.source_label.setMinimumWidth(85)
-        self.source_label.setAlignment(Qt.AlignCenter)
-        self.source_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.source_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.source_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         # Label to display text
         self.label = QLabel(text)
-        self.label.setTextFormat(Qt.RichText)
+        self.label.setTextFormat(Qt.TextFormat.RichText)
         self.label.setWordWrap(True)
-        self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
         # Button (Add or Remove)
         self.button = QPushButton(button_text)
         self.button.clicked.connect(self._emit_button_clicked)
-        self.button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
 
         item_layout.addWidget(self.source_label)
         item_layout.addWidget(self.label)
         item_layout.addWidget(self.button)
 
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setCursor(Qt.PointingHandCursor)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
 
         # State tracking for styling
         self._selected = False
@@ -117,7 +118,7 @@ class ListItemWidget(QFrame):
 
     # Override mousePressEvent to detect clicks on the frame
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self._emit_item_clicked()
         super().mousePressEvent(event)
 
@@ -135,9 +136,9 @@ class ListItemWidget(QFrame):
         self.button.setEnabled(enabled)
         self.setEnabled(enabled)
         if enabled:
-            self.setCursor(Qt.PointingHandCursor)
+            self.setCursor(Qt.CursorShape.PointingHandCursor)
         else:
-            self.setCursor(Qt.ArrowCursor)
+            self.setCursor(Qt.CursorShape.ArrowCursor)
         self._update_style()  # Update style when enabled state changes
 
     def set_selected(self, selected):
@@ -160,7 +161,7 @@ class ListItemWidget(QFrame):
         # State-specific overrides
         if not self.isEnabled():
             # Style for disabled state (dimmed)
-            base_style = "border-radius: 3px; background-color: #252525; margin-bottom: 3px;"  # Darker background
+            base_style = "border-radius: 3px; background-color: #252525; margin-bottom: 3px;"  
             text_color = "color: #888888;"  # Grayed out text
             if self._selected:
                 # Dimmer orange border for selected but disabled
@@ -263,11 +264,11 @@ class AnnotationApp(QWidget):
         self.position_label = QLabel("")
         self.position_label.setStyleSheet("color: #90CAF9; font-weight: bold; padding: 2px;")
         top_pos_layout.addWidget(self.position_label)
-        top_group_pos.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        top_group_pos.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
 
         # Title Navigator (Dropdown)
         self.title_navigator = QComboBox()
-        self.title_navigator.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.title_navigator.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.title_navigator.setStyleSheet("combobox-popup: 0;")
         top_title_layout.addWidget(self.title_navigator)
         # Removed setSizePolicy for the group, let the combobox control expansion
@@ -278,11 +279,11 @@ class AnnotationApp(QWidget):
             "This is where the detailed point description will be displayed."
         )
         self.point_description_label.setWordWrap(True)
-        self.point_description_label.setAlignment(Qt.AlignTop)
+        self.point_description_label.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.point_description_label.setStyleSheet("padding: 5px;")
 
         top_desc_layout.addWidget(self.point_description_label)
-        top_group_desc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        top_group_desc.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
         # Create a horizontal layout for the group boxes
         top_panel_layout = QHBoxLayout()
@@ -297,7 +298,7 @@ class AnnotationApp(QWidget):
         
         # Add icon and tooltip to remove button
         style = QApplication.style()
-        self.remove_point_button.setIcon(style.standardIcon(QStyle.SP_DialogCancelButton))
+        self.remove_point_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
         self.remove_point_button.setToolTip("Remove this point")
 
         # Add the horizontal layout to the main layout
@@ -356,12 +357,12 @@ class AnnotationApp(QWidget):
         # Scroll Area
         self.left_scroll_area = QScrollArea()
         self.left_scroll_area.setWidgetResizable(True)
-        self.left_scroll_area.setFrameShape(QFrame.NoFrame)
+        self.left_scroll_area.setFrameShape(QFrame.Shape.NoFrame)
 
         # Container widget inside ScrollArea
         self.left_list_widget = QWidget()
         self.left_list_layout = QVBoxLayout(self.left_list_widget)
-        self.left_list_layout.setAlignment(Qt.AlignTop)
+        self.left_list_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.left_list_layout.setContentsMargins(0, 0, 0, 0)
         self.left_list_layout.setSpacing(5)
 
@@ -396,12 +397,12 @@ class AnnotationApp(QWidget):
         # Scroll Area for results
         self.right_scroll_area = QScrollArea()
         self.right_scroll_area.setWidgetResizable(True)
-        self.right_scroll_area.setFrameShape(QFrame.NoFrame)
+        self.right_scroll_area.setFrameShape(QFrame.Shape.NoFrame)
 
         # Container widget for results
         self.right_list_widget = QWidget()
         self.right_list_layout = QVBoxLayout(self.right_list_widget)
-        self.right_list_layout.setAlignment(Qt.AlignTop)
+        self.right_list_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.right_list_layout.setContentsMargins(0, 0, 0, 0)
         self.right_list_layout.setSpacing(5)
 
@@ -420,9 +421,9 @@ class AnnotationApp(QWidget):
         self.next_button = QPushButton("Next")
         # Add icons and tooltips for navigation buttons
         style = QApplication.style()
-        self.prev_button.setIcon(style.standardIcon(QStyle.SP_ArrowLeft))
-        self.next_button.setIcon(style.standardIcon(QStyle.SP_ArrowRight))
-        self.confirm_button.setIcon(style.standardIcon(QStyle.SP_DialogApplyButton))
+        self.prev_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_ArrowLeft))
+        self.next_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_ArrowRight))
+        self.confirm_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton))
         self.prev_button.setToolTip("Go to previous point")
         self.next_button.setToolTip("Go to next point")
         self.confirm_button.setToolTip("Toggle evaluation state")
@@ -962,7 +963,7 @@ if __name__ == "__main__":
 
     # --- File Selection Dialog ---
     file_dialog = QFileDialog()
-    file_dialog.setFileMode(QFileDialog.ExistingFile)
+    file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
     file_dialog.setNameFilter("JSON files (*.json)")
     file_dialog.setDirectory(os.getcwd())
 
