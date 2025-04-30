@@ -254,17 +254,25 @@ class AnnotationApp(QWidget):
         top_group_desc = QGroupBox("Description")
         top_group_pos = QGroupBox("Position")
         top_group_title = QGroupBox("Title")
+        top_group_id = QGroupBox("ID")
 
         # Layouts for each group box
         top_desc_layout = QVBoxLayout(top_group_desc)
         top_pos_layout = QVBoxLayout(top_group_pos)
         top_title_layout = QVBoxLayout(top_group_title)
+        top_id_layout = QVBoxLayout(top_group_id)
 
         # Position label in Position group
         self.position_label = QLabel("")
         self.position_label.setStyleSheet("color: #90CAF9; font-weight: bold; padding: 2px;")
         top_pos_layout.addWidget(self.position_label)
         top_group_pos.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        
+        # ID label in ID group
+        self.id_label = QLabel("")
+        self.id_label.setStyleSheet("color: #90CAF9; font-weight: bold; padding: 2px;")
+        top_id_layout.addWidget(self.id_label)
+        top_group_id.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
 
         # Title Navigator (Dropdown)
         self.title_navigator = QComboBox()
@@ -289,6 +297,7 @@ class AnnotationApp(QWidget):
         top_panel_layout = QHBoxLayout()
         top_panel_layout.addWidget(top_group_pos)
         top_panel_layout.addWidget(top_group_title)
+        top_panel_layout.addWidget(top_group_id)
         top_panel_layout.addWidget(top_group_desc, stretch=1)
 
         # Add A button to remove points fully
@@ -498,6 +507,10 @@ class AnnotationApp(QWidget):
         self.position_label.setText(
             f"Point {point_index + 1} of {len(self.ground_truth_data['points'])}"
         )
+        
+        # Display the point ID if it exists
+        point_id = point_data.get("id", "N/A")
+        self.id_label.setText(str(point_id))
 
         self._populate_combo_box(point_index)
 
