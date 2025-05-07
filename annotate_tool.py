@@ -79,8 +79,16 @@ class ListItemWidget(QFrame):
         self.source_label.setStyleSheet(
             f"background-color: {source_bg_color}; color: {source_text_color}; padding: 2px 4px; border-radius: 3px; font-size: 8pt;"
         )
-        # add metadata hover
-        self.source_label.setToolTip(f"Metadata: {metadata}")
+        # Format metadata as a table for the tooltip
+        if metadata:
+            tooltip = "<table border='1' cellpadding='3' style='border-collapse: collapse;'>"
+            tooltip += "<tr><th colspan='2'>Metadata</th></tr>"
+            for key, value in metadata.items():
+                tooltip += f"<tr><td><b>{key}</b></td><td>{value}</td></tr>"
+            tooltip += "</table>"
+            self.source_label.setToolTip(tooltip)
+        else:
+            self.source_label.setToolTip("No metadata available")
 
         # Vertically align
         self.source_label.setMinimumWidth(85)
