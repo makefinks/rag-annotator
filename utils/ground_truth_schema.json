@@ -62,6 +62,13 @@
                     }
                   },
                   "additionalProperties": true
+                },
+                "highlights": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of specific strings to highlight within this text, in addition to point-level keywords."
                 }
               }
             }

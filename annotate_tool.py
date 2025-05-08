@@ -5,7 +5,7 @@ import re
 import logging
 from PySide6.QtWidgets import (
     QApplication,
-    QFileDialog, # Added for file selection
+    QFileDialog,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -18,12 +18,16 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QMessageBox,
     QComboBox,
-    QStyle
+    QStyle,
+    QSplitter,
 )
 
 from PySide6.QtCore import Qt, Signal, Slot
 from jsonschema import ValidationError
-from utils.search.bm25_handler import get_or_build_index, extract_texts_from_ground_truth
+from utils.search.bm25_handler import (
+    get_or_build_index,
+    extract_texts_from_ground_truth,
+)
 from utils.formatting import format_md_text_to_html
 from utils.validation import validate_ground_truth
 
@@ -59,7 +63,7 @@ class ListItemWidget(QFrame):
         "default": "#000000",
     }
 
-    def __init__(self, item_id, text, source, button_text, metadata = None, parent=None):
+    def __init__(self, item_id, text, source, button_text, metadata=None, parent=None):
         super().__init__(parent)
         self.item_id = item_id
         self.source = source
@@ -81,7 +85,9 @@ class ListItemWidget(QFrame):
         )
         # Format metadata as a table for the tooltip
         if metadata:
-            tooltip = "<table border='1' cellpadding='3' style='border-collapse: collapse;'>"
+            tooltip = (
+                "<table border='1' cellpadding='3' style='border-collapse: collapse;'>"
+            )
             tooltip += "<tr><th colspan='2'>Metadata</th></tr>"
             for key, value in metadata.items():
                 tooltip += f"<tr><td><b>{key}</b></td><td>{value}</td></tr>"
@@ -93,19 +99,22 @@ class ListItemWidget(QFrame):
         # Vertically align
         self.source_label.setMinimumWidth(85)
         self.source_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.source_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.source_label.setSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+        )
 
         # Label to display text
         self.label = QLabel(text)
         self.label.setTextFormat(Qt.TextFormat.RichText)
         self.label.setWordWrap(True)
-        self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self.label.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
+        )
 
         # Button (Add or Remove)
         self.button = QPushButton(button_text)
         self.button.clicked.connect(self._emit_button_clicked)
         self.button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-
 
         item_layout.addWidget(self.source_label)
         item_layout.addWidget(self.label)
@@ -116,7 +125,7 @@ class ListItemWidget(QFrame):
 
         # State tracking for styling
         self._selected = False
-        self._update_style()  # Apply initial style
+        self._update_style()
 
     def _emit_button_clicked(self):
         self.button_clicked_signal.emit(self)
@@ -169,7 +178,9 @@ class ListItemWidget(QFrame):
         # State-specific overrides
         if not self.isEnabled():
             # Style for disabled state (dimmed)
-            base_style = "border-radius: 3px; background-color: #252525; margin-bottom: 3px;"  
+            base_style = (
+                "border-radius: 3px; background-color: #252525; margin-bottom: 3px;"
+            )
             text_color = "color: #888888;"  # Grayed out text
             if self._selected:
                 # Dimmer orange border for selected but disabled
@@ -190,7 +201,10 @@ class ListItemWidget(QFrame):
 # --- Main Application Window ---
 class AnnotationApp(QWidget):
     # Highlight color used for keywords within text descriptions and fetched texts.
-    HIGHLIGHT_COLOR = "rgba(255, 255, 0, 0.2)"
+    HIGHLIGHT_COLOR = "rgba(255, 255, 0, 0.2)"  # Yellow for general keywords
+    ITEM_HIGHLIGHT_COLOR = (
+        "rgba(135, 206, 250, 0.3)"  # Light blue for item-specific highlights
+    )
 
     def __init__(self, data_file_path, ground_truth_data):
         super().__init__()
@@ -225,11 +239,11 @@ class AnnotationApp(QWidget):
         self._create_top_panel()
 
         # --- Middle Panels (Lists) ---
-        self.middle_layout = QHBoxLayout()
-        self.middle_layout.setSpacing(10)
+        self.splitter = QSplitter(Qt.Orientation.Horizontal)
         self._create_left_panel()
         self._create_right_panel()
-        self.main_layout.addLayout(self.middle_layout, 1)
+        self.main_layout.addWidget(self.splitter, 1)
+        self.splitter.setSizes([1, 1])
 
         # --- Bottom Panel (Navigation) ---
         self._create_bottom_panel()
@@ -241,21 +255,25 @@ class AnnotationApp(QWidget):
         if self.ground_truth_data["points"]:
             # Find first non-evaluated point or default to first point
             self.current_point_index = next(
-                (i for i, point in enumerate(self.ground_truth_data["points"]) if not point.get("evaluated", False)),
-                0
+                (
+                    i
+                    for i, point in enumerate(self.ground_truth_data["points"])
+                    if not point.get("evaluated", False)
+                ),
+                0,
             )
             self._load_point(self.current_point_index)
         else:
             logger.warning("No subobjects found in the data file.")
             # Ensure UI elements exist before trying to set text/stat
-            if hasattr(self, 'point_description_label'):
-                 self.point_description_label.setText("No subobjects loaded.")
-            if hasattr(self, 'prev_button'):
-                 self.prev_button.setEnabled(False)
-            if hasattr(self, 'next_button'):
-                 self.next_button.setEnabled(False)
-            if hasattr(self, 'confirm_button'):
-                 self.confirm_button.setEnabled(False)
+            if hasattr(self, "point_description_label"):
+                self.point_description_label.setText("No subobjects loaded.")
+            if hasattr(self, "prev_button"):
+                self.prev_button.setEnabled(False)
+            if hasattr(self, "next_button"):
+                self.next_button.setEnabled(False)
+            if hasattr(self, "confirm_button"):
+                self.confirm_button.setEnabled(False)
 
     def _create_top_panel(self):
         # Create group boxes
@@ -272,19 +290,27 @@ class AnnotationApp(QWidget):
 
         # Position label in Position group
         self.position_label = QLabel("")
-        self.position_label.setStyleSheet("color: #90CAF9; font-weight: bold; padding: 2px;")
+        self.position_label.setStyleSheet(
+            "color: #90CAF9; font-weight: bold; padding: 2px;"
+        )
         top_pos_layout.addWidget(self.position_label)
-        top_group_pos.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
-        
+        top_group_pos.setSizePolicy(
+            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
+        )
+
         # ID label in ID group
         self.id_label = QLabel("")
         self.id_label.setStyleSheet("color: #90CAF9; font-weight: bold; padding: 2px;")
         top_id_layout.addWidget(self.id_label)
-        top_group_id.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        top_group_id.setSizePolicy(
+            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
+        )
 
         # Title Navigator (Dropdown)
         self.title_navigator = QComboBox()
-        self.title_navigator.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.title_navigator.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
+        )
         self.title_navigator.setStyleSheet("combobox-popup: 0;")
         top_title_layout.addWidget(self.title_navigator)
         # Removed setSizePolicy for the group, let the combobox control expansion
@@ -299,7 +325,9 @@ class AnnotationApp(QWidget):
         self.point_description_label.setStyleSheet("padding: 5px;")
 
         top_desc_layout.addWidget(self.point_description_label)
-        top_group_desc.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        top_group_desc.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
+        )
 
         # Create a horizontal layout for the group boxes
         top_panel_layout = QHBoxLayout()
@@ -312,10 +340,12 @@ class AnnotationApp(QWidget):
         self.remove_point_button = QPushButton("Remove")
         self.remove_point_button.clicked.connect(self._remove_point)
         top_panel_layout.addWidget(self.remove_point_button)
-        
+
         # Add icon and tooltip to remove button
         style = QApplication.style()
-        self.remove_point_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton))
+        self.remove_point_button.setIcon(
+            style.standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton)
+        )
         self.remove_point_button.setToolTip("Remove this point")
 
         # Add the horizontal layout to the main layout
@@ -323,7 +353,6 @@ class AnnotationApp(QWidget):
 
         # Ensure the top panels don't stretch vertically
         self.main_layout.setStretchFactor(top_panel_layout, 0)
-
 
     def _remove_point(self):
         """Removes the current evaluation point from the ground truth without confirmation"""
@@ -336,7 +365,9 @@ class AnnotationApp(QWidget):
 
         # Verify the index is valid before removing
         if current_index < 0 or current_index >= len(self.ground_truth_data["points"]):
-            logger.error(f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points'])-1}")
+            logger.error(
+                f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points']) - 1}"
+            )
             return
 
         del self.ground_truth_data["points"][current_index]
@@ -385,9 +416,8 @@ class AnnotationApp(QWidget):
 
         self.left_scroll_area.setWidget(self.left_list_widget)
         left_outer_layout.addWidget(self.left_scroll_area)
-        # Allow the left panel to stretch horizontally within the middle layout.
-        # Add to middle layout with stretch factor (wider panel)
-        self.middle_layout.addWidget(left_groupbox, 1)
+        # Add the left groupbox to the splitter
+        self.splitter.addWidget(left_groupbox)
 
     def _create_right_panel(self):
         """Creates the right panel displaying the currently selected text items."""
@@ -425,8 +455,8 @@ class AnnotationApp(QWidget):
 
         self.right_scroll_area.setWidget(self.right_list_widget)
         right_outer_layout.addWidget(self.right_scroll_area)
-        # Allow the right panel to stretch horizontally within the middle layout.
-        self.middle_layout.addWidget(right_groupbox, 1)
+        # Add the right groupbox to the splitter
+        self.splitter.addWidget(right_groupbox)
 
     def _create_bottom_panel(self):
         """Creates the bottom panel containing navigation and confirmation buttons."""
@@ -439,8 +469,12 @@ class AnnotationApp(QWidget):
         # Add icons and tooltips for navigation buttons
         style = QApplication.style()
         self.prev_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_ArrowLeft))
-        self.next_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_ArrowRight))
-        self.confirm_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton))
+        self.next_button.setIcon(
+            style.standardIcon(QStyle.StandardPixmap.SP_ArrowRight)
+        )
+        self.confirm_button.setIcon(
+            style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton)
+        )
         self.prev_button.setToolTip("Go to previous point")
         self.next_button.setToolTip("Go to next point")
         self.confirm_button.setToolTip("Toggle evaluation state")
@@ -463,7 +497,9 @@ class AnnotationApp(QWidget):
     def _apply_stylesheet(self):
         """Loads and applies the stylesheet from an external CSS file."""
         try:
-            css_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dark_theme.css")
+            css_file_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), "dark_theme.css"
+            )
             # Check if the file exists
             if not os.path.exists(css_file_path):
                 logger.error(f"Stylesheet file not found: {css_file_path}")
@@ -495,7 +531,11 @@ class AnnotationApp(QWidget):
     # --- UI Population ---
     def _load_point(self, point_index):
         """Populates the UI with data from the specified point index."""
-        if not self.ground_truth_data["points"] or point_index < 0 or point_index >= len(self.ground_truth_data["points"]):
+        if (
+            not self.ground_truth_data["points"]
+            or point_index < 0
+            or point_index >= len(self.ground_truth_data["points"])
+        ):
             logger.warning(f"Error: Point index {point_index} is out of range.")
             return
 
@@ -515,7 +555,7 @@ class AnnotationApp(QWidget):
         self.position_label.setText(
             f"Point {point_index + 1} of {len(self.ground_truth_data['points'])}"
         )
-        
+
         # Display the point ID if it exists
         point_id = point_data.get("id", "N/A")
         self.id_label.setText(str(point_id))
@@ -526,28 +566,41 @@ class AnnotationApp(QWidget):
         keywords = point_data.get("keywords", [])
         description = point_data.get("description", "No description provided.")
         highlighted_description = self._highlight_keywords(
-            description, keywords
+            description, keywords, self.HIGHLIGHT_COLOR
         )
-        self.point_description_label.setText(
-            highlighted_description
-        )
+        self.point_description_label.setText(highlighted_description)
 
         # --- Populate Left Panel (Fetched Texts) ---
         is_evaluated = point_data.get("evaluated", False)
+        point_keywords = point_data.get("keywords", [])  # Get point-level keywords
 
         for item_data in point_data.get("fetched_texts", []):
             item_id = item_data.get("id")
             text = item_data.get("text", "")
             source = item_data.get("source", "unknown")
             metadata = item_data.get("metadata", {})
+            item_specific_highlights = item_data.get(
+                "highlights", []
+            )  # Get item-specific highlights
 
             if item_id is None:
                 logger.warning("Found fetched_text item without an ID. Skipping.")
                 continue
 
-            # Highlight keywords
-            highlighted_text = self._highlight_keywords(text, keywords)
+            temp_highlighted_text = text  # Start with original text
+            if item_specific_highlights:
+                temp_highlighted_text = self._highlight_keywords(
+                    temp_highlighted_text,
+                    item_specific_highlights,
+                    self.ITEM_HIGHLIGHT_COLOR,
+                )
 
+            if point_keywords:
+                temp_highlighted_text = self._highlight_keywords(
+                    temp_highlighted_text, point_keywords, self.HIGHLIGHT_COLOR
+                )
+
+            highlighted_text = temp_highlighted_text
             formatted_text = format_md_text_to_html(highlighted_text)
 
             # Check if this item is selected
@@ -567,7 +620,9 @@ class AnnotationApp(QWidget):
 
         # --- Update Button States ---
         self.prev_button.setEnabled(point_index > 0)
-        self.next_button.setEnabled(point_index < len(self.ground_truth_data["points"]) - 1)
+        self.next_button.setEnabled(
+            point_index < len(self.ground_truth_data["points"]) - 1
+        )
         # Confirm button is always enabled, but text changes
         self.confirm_button.setText("Unconfirm" if is_evaluated else "Confirm")
 
@@ -598,11 +653,11 @@ class AnnotationApp(QWidget):
             if isinstance(widget, ListItemWidget):
                 widget.set_enabled_state(enabled)
 
-    def _highlight_keywords(self, text, keywords):
+    def _highlight_keywords(self, text, keywords, color):
         """
-        Highlights specified keywords within a given text string.
+        Highlights specified keywords within a given text string using the provided color.
         Uses regex with word boundaries to avoid partial matches and applies
-        HTML span tags with the defined HIGHLIGHT_COLOR for visual styling.
+        HTML span tags for visual styling.
         Handles potential regex errors gracefully.
         """
         highlighted_text = text
@@ -617,9 +672,7 @@ class AnnotationApp(QWidget):
                 continue
             pattern = r"(\b" + re.escape(keyword) + r"\b)"
             # Highlight using a span with background color (RGBA)
-            replacement = (
-                f"<span style='background-color:{self.HIGHLIGHT_COLOR};'>\\1</span>"
-            )
+            replacement = f"<span style='background-color:{color};'>\\1</span>"
             try:
                 highlighted_text = re.sub(
                     pattern, replacement, highlighted_text, flags=re.IGNORECASE
@@ -678,17 +731,22 @@ class AnnotationApp(QWidget):
             # Load next
             self._load_point(self.current_point_index + 1)
 
-    @Slot(int) # Slot receives the new index from the QComboBox signal
+    @Slot(int)  # Slot receives the new index from the QComboBox signal
     def _navigate_via_navigator(self, combo_box_index):
         """Navigates to the point selected in the title navigator dropdown."""
-        if combo_box_index == -1: # Should not happen unless list is empty
-             return
+        if combo_box_index == -1:  # Should not happen unless list is empty
+            return
 
         target_point_index = self.title_navigator.itemData(combo_box_index)
 
         # Check if it's a valid index and different from the current one
-        if target_point_index is not None and target_point_index != self.current_point_index:
-            logger.info(f"Navigating via title navigator to point index: {target_point_index}")
+        if (
+            target_point_index is not None
+            and target_point_index != self.current_point_index
+        ):
+            logger.info(
+                f"Navigating via title navigator to point index: {target_point_index}"
+            )
             # Save current state before navigating
             self._save_ground_truth()
             # Load the selected point
@@ -734,11 +792,14 @@ class AnnotationApp(QWidget):
             self.right_list_layout.addWidget(no_results_label)
             return
 
-        used_ids = [item["id"] for item in point_data.get("fetched_texts", []) if item.get("id") is not None]
+        used_ids = [
+            item["id"]
+            for item in point_data.get("fetched_texts", [])
+            if item.get("id") is not None
+        ]
 
         # Add each result to the right panel
         for i, result_text in enumerate(results):
-
             # get the id
             actual_id = self.text_to_id_map.get(result_text)
 
@@ -746,10 +807,17 @@ class AnnotationApp(QWidget):
             if actual_id in used_ids:
                 continue
 
+            # Determine terms to highlight based on original logic
+            terms_to_highlight_in_bm25 = []
+            search_terms_list = [term for term in search_query.split() if term.strip()]
+
+            if search_query and len(search_terms_list) == 1:
+                terms_to_highlight_in_bm25 = list(set(keywords + search_terms_list))
+            else:
+                terms_to_highlight_in_bm25 = list(set(keywords))
 
             highlighted_text = self._highlight_keywords(
-                result_text,
-                keywords + search_query.split() if len(search_query.split()) == 1 else keywords
+                result_text, terms_to_highlight_in_bm25, self.HIGHLIGHT_COLOR
             )
             formatted_text = format_md_text_to_html(highlighted_text)
             # create the widget for the result
@@ -763,7 +831,9 @@ class AnnotationApp(QWidget):
 
         # if no widgets were added, search returned nothing
         if self.right_list_layout.count() == 0:
-            no_results_label = QLabel("No results found for this query, or results already on left side.")
+            no_results_label = QLabel(
+                "No results found for this query, or results already on left side."
+            )
             no_results_label.setStyleSheet("padding: 10px; color: #888888;")
             self.right_list_layout.addWidget(no_results_label)
 
@@ -913,10 +983,10 @@ class AnnotationApp(QWidget):
 
         # Add to the left panel UI
         keywords = point_data.get("keywords", [])
-        highlighted_text = self._highlight_keywords(result_text, keywords)
-        self.add_item_to_left_panel(
-            result_id, highlighted_text, "bm25-appended", None
+        highlighted_text = self._highlight_keywords(
+            result_text, keywords, self.HIGHLIGHT_COLOR
         )
+        self.add_item_to_left_panel(result_id, highlighted_text, "bm25-appended", None)
 
         # remove from right panel
         item_widget.deleteLater()  # Remove the widget from the right panel
@@ -933,9 +1003,7 @@ class AnnotationApp(QWidget):
         item_widget.item_clicked_signal.connect(self.mark_text_as_selected)
 
         self.left_list_layout.addWidget(item_widget)
-        return (
-            item_widget
-        )
+        return item_widget
 
     def clear_layout(self, layout):
         """
@@ -954,8 +1022,9 @@ class AnnotationApp(QWidget):
                 self.clear_layout(child.layout())
                 # The layout item (representing the nested layout) is removed by takeAt(0)
 
+
 def load_and_validate_data(data_file_path):
-    """Loads and validates the JSON data """
+    """Loads and validates the JSON data"""
     if not os.path.exists(data_file_path):
         raise FileNotFoundError(f"Data file {data_file_path} does not exist.")
     try:
@@ -971,12 +1040,15 @@ def load_and_validate_data(data_file_path):
         return None
     except ValidationError as e:
         logger.error(f"Validation error: {e.message}")
-        QMessageBox.critical(None, "Error", f"Validation error in ground truth data:\n{e.message}")
+        QMessageBox.critical(
+            None, "Error", f"Validation error in ground truth data:\n{e.message}"
+        )
         return None
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
         QMessageBox.critical(None, "Error", str(e))
         return None
+
 
 # --- Run the Application ---
 if __name__ == "__main__":
@@ -1000,8 +1072,7 @@ if __name__ == "__main__":
             if ground_truth_data:
                 # launch app with valid data
                 window = AnnotationApp(
-                    data_file_path=data_file_path,
-                    ground_truth_data=ground_truth_data
+                    data_file_path=data_file_path, ground_truth_data=ground_truth_data
                 )
                 window.show()
                 sys.exit(app.exec())
