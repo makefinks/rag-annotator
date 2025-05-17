@@ -1,10 +1,10 @@
 import logging
 import re
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QLayout
 
 logger = logging.getLogger(__name__)
 
-def clear_layout(layout):
+def clear_layout(layout: QLayout | None) -> None:
     """
     Removes all widgets and nested layouts from a given QLayout.
     Uses deleteLater() for safe widget removal during the event loop.
@@ -21,14 +21,14 @@ def clear_layout(layout):
             clear_layout(child.layout())
             # The layout item (representing the nested layout) is removed by takeAt(0)
 
-def highlight_keywords(text, keywords, color):
+def highlight_keywords(text: str, keywords: list[str], color: str) -> str:
     """
     Highlights specified keywords within a given text string using the provided color.
     Uses regex with word boundaries to avoid partial matches and applies
     HTML span tags for visual styling.
     Handles potential regex errors gracefully.
     """
-    highlighted_text = text
+    highlighted_text: str = text
     if not keywords:
         return highlighted_text
 
@@ -38,9 +38,9 @@ def highlight_keywords(text, keywords, color):
         # Skip empty keywords
         if not keyword:
             continue
-        pattern = r"(\b" + re.escape(keyword) + r"\b)"
+        pattern: str = r"(\b" + re.escape(keyword) + r"\b)"
         # Highlight using a span with background color (RGBA)
-        replacement = f"<span style='background-color:{color};'>\\1</span>"
+        replacement: str = f"<span style='background-color:{color};'>\\1</span>"
         try:
             highlighted_text = re.sub(
                 pattern, replacement, highlighted_text, flags=re.IGNORECASE
@@ -48,3 +48,4 @@ def highlight_keywords(text, keywords, color):
         except re.error as e:
             logger.error(f"Regex error highlighting keyword '{keyword}': {e}")
     return highlighted_text
+

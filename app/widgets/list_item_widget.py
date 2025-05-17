@@ -4,16 +4,19 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QSizePolicy,
+    QWidget,
 )
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QMouseEvent
+from typing import Any
 
 
 class ListItemWidget(QFrame):
-    button_clicked_signal = Signal(QFrame)
-    item_clicked_signal = Signal(QFrame)
+    button_clicked_signal: Signal = Signal(QFrame)
+    item_clicked_signal: Signal = Signal(QFrame)
 
     # Color mapping for different text sources. Used for the source label background.
-    SOURCE_COLORS = {
+    SOURCE_COLORS: dict[str, str] = {
         "llm": "#AEC6CF",  # Pastel Blue
         "semantic": "#C1E1C1",  # Pale Green
         "bm25-appended": "#FFD8B1",  # Light Apricot
@@ -21,7 +24,7 @@ class ListItemWidget(QFrame):
         "default": "#E0E0E0",  # Default light gray
     }
 
-    SOURCE_TEXT_COLORS = {
+    SOURCE_TEXT_COLORS: dict[str, str] = {
         "llm": "#000000",
         "semantic": "#000000",
         "bm25-appended": "#000000",
@@ -29,7 +32,7 @@ class ListItemWidget(QFrame):
         "default": "#000000",
     }
 
-    def __init__(self, item_id, text, source, button_text, metadata=None, parent=None):
+    def __init__(self, item_id: Any, text: str, source: str, button_text: str, metadata: dict[str, Any] | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.item_id = item_id
         self.source = source
@@ -93,28 +96,28 @@ class ListItemWidget(QFrame):
         self._selected = False
         self._update_style()
 
-    def _emit_button_clicked(self):
+    def _emit_button_clicked(self) -> None:
         self.button_clicked_signal.emit(self)
 
-    def _emit_item_clicked(self):
+    def _emit_item_clicked(self) -> None:
         self.item_clicked_signal.emit(self)
 
     # Override mousePressEvent to detect clicks on the frame
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self._emit_item_clicked()
         super().mousePressEvent(event)
 
-    def get_text(self):
+    def get_text(self) -> str:
         return self.original_text
 
-    def get_formatted_text(self):
+    def get_formatted_text(self) -> str:
         return self.label.text()
 
-    def set_text(self, text):
+    def set_text(self, text: str) -> None:
         self.label.setText(text)
 
-    def set_enabled_state(self, enabled):
+    def set_enabled_state(self, enabled: bool) -> None:
         """Enable/disable interaction with the widget."""
         self.button.setEnabled(enabled)
         self.setEnabled(enabled)
@@ -124,12 +127,12 @@ class ListItemWidget(QFrame):
             self.setCursor(Qt.CursorShape.ArrowCursor)
         self._update_style()  # Update style when enabled state changes
 
-    def set_selected(self, selected):
+    def set_selected(self, selected: bool) -> None:
         """Set the selected state and update the style."""
         self._selected = selected
         self._update_style()
 
-    def _update_style(self):
+    def _update_style(self) -> None:
         """
         Applies dynamic styling based on the widget's selected and enabled state.
         Overrides parts of the base stylesheet applied in AnnotationApp._apply_stylesheet.
