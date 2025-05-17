@@ -1,24 +1,16 @@
 import os
 import logging
-import re
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
-    QLabel,
-    QLineEdit,
-    QScrollArea,
-    QGroupBox,
-    QFrame,
-    QSizePolicy,
-    QComboBox,
-    QStyle,
     QSplitter,
 )
 from PySide6.QtCore import Qt, Slot
-from app.widgets.list_item_widget import ListItemWidget
-from app.utils.ui_helpers import clear_layout, highlight_keywords
+from app.widgets.top_panel import TopPanel
+from app.widgets.left_panel import LeftPanel
+from app.widgets.right_panel import RightPanel
+from app.widgets.bottom_panel import BottomPanel
+from app.utils.ui_helpers import highlight_keywords
 from app.utils.data_handler import save_ground_truth
 from utils.search.bm25_handler import (
     get_or_build_index,
@@ -60,24 +52,15 @@ class AnnotationApp(QWidget):
         }
         self.bm25_texts = extract_texts_from_ground_truth(self.ground_truth_data)
 
+        # --- Main Layout ---
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(15, 15, 15, 15)
         self.main_layout.setSpacing(10)
 
-        # --- Top Panel (Point Description) ---
-        self._create_top_panel()
+        # --- Initialize Panels ---
+        self._init_panels()
 
-        # --- Middle Panels (Lists) ---
-        self.splitter = QSplitter(Qt.Orientation.Horizontal)
-        self._create_left_panel()
-        self._create_right_panel()
-        self.main_layout.addWidget(self.splitter, 1)
-        self.splitter.setSizes([1, 1])
-
-        # --- Bottom Panel (Navigation) ---
-        self._create_bottom_panel()
-
-        # Apply Stylesheet
+        # --- Apply Stylesheet ---
         self._apply_stylesheet()
 
         # --- Load Initial Point ---
@@ -94,234 +77,43 @@ class AnnotationApp(QWidget):
             self._load_point(self.current_point_index)
         else:
             logger.warning("No subobjects found in the data file.")
-            # Ensure UI elements exist before trying to set text/stat
-            if hasattr(self, "point_description_label"):
-                self.point_description_label.setText("No subobjects loaded.")
-            if hasattr(self, "prev_button"):
-                self.prev_button.setEnabled(False)
-            if hasattr(self, "next_button"):
-                self.next_button.setEnabled(False)
-            if hasattr(self, "confirm_button"):
-                self.confirm_button.setEnabled(False)
+            self.top_panel.set_description_text("No subobjects loaded.")
+            self.bottom_panel.set_prev_enabled(False)
+            self.bottom_panel.set_next_enabled(False)
+            self.bottom_panel.set_confirm_text("Confirm")
 
-    def _create_top_panel(self):
-        # Create group boxes
-        top_group_desc = QGroupBox("Description")
-        top_group_pos = QGroupBox("Position")
-        top_group_title = QGroupBox("Title")
-        top_group_id = QGroupBox("ID")
+    def _init_panels(self):
+        """Initialize all panels and connect their signals."""
+        # Top Panel
+        self.top_panel = TopPanel()
+        self.top_panel.navigator_changed.connect(self._navigate_via_navigator)
+        self.top_panel.remove_point_clicked.connect(self._remove_point)
+        self.main_layout.addWidget(self.top_panel)
 
-        # Layouts for each group box
-        top_desc_layout = QVBoxLayout(top_group_desc)
-        top_pos_layout = QVBoxLayout(top_group_pos)
-        top_title_layout = QVBoxLayout(top_group_title)
-        top_id_layout = QVBoxLayout(top_group_id)
+        # Middle Panels (Left and Right in a Splitter)
+        self.splitter = QSplitter(Qt.Orientation.Horizontal)
+        
+        # Left Panel
+        self.left_panel = LeftPanel()
+        self.left_panel.item_clicked.connect(self.mark_text_as_selected)
+        self.left_panel.item_remove_clicked.connect(self.remove_fetched_text)
+        self.splitter.addWidget(self.left_panel)
+        
+        # Right Panel
+        self.right_panel = RightPanel()
+        self.right_panel.search_requested.connect(self.perform_bm25_search)
+        self.right_panel.item_add_clicked.connect(self.add_bm25_result_to_fetched)
+        self.splitter.addWidget(self.right_panel)
+        
+        self.main_layout.addWidget(self.splitter, 1)
+        self.splitter.setSizes([1, 1])
 
-        # Position label in Position group
-        self.position_label = QLabel("")
-        self.position_label.setStyleSheet(
-            "color: #90CAF9; font-weight: bold; padding: 2px;"
-        )
-        top_pos_layout.addWidget(self.position_label)
-        top_group_pos.setSizePolicy(
-            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
-        )
-
-        # ID label in ID group
-        self.id_label = QLabel("")
-        self.id_label.setStyleSheet("color: #90CAF9; font-weight: bold; padding: 2px;")
-        top_id_layout.addWidget(self.id_label)
-        top_group_id.setSizePolicy(
-            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
-        )
-
-        # Title Navigator (Dropdown)
-        self.title_navigator = QComboBox()
-        self.title_navigator.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
-        )
-        self.title_navigator.setStyleSheet("combobox-popup: 0;")
-        top_title_layout.addWidget(self.title_navigator)
-        # Removed setSizePolicy for the group, let the combobox control expansion
-        self.title_navigator.currentIndexChanged.connect(self._navigate_via_navigator)
-
-        # Description label in Description group
-        self.point_description_label = QLabel(
-            "This is where the detailed point description will be displayed."
-        )
-        self.point_description_label.setWordWrap(True)
-        self.point_description_label.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.point_description_label.setStyleSheet("padding: 5px;")
-
-        top_desc_layout.addWidget(self.point_description_label)
-        top_group_desc.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
-        )
-
-        # Create a horizontal layout for the group boxes
-        top_panel_layout = QHBoxLayout()
-        top_panel_layout.addWidget(top_group_pos)
-        top_panel_layout.addWidget(top_group_title)
-        top_panel_layout.addWidget(top_group_id)
-        top_panel_layout.addWidget(top_group_desc, stretch=1)
-
-        # Add A button to remove points fully
-        self.remove_point_button = QPushButton("Remove")
-        self.remove_point_button.clicked.connect(self._remove_point)
-        top_panel_layout.addWidget(self.remove_point_button)
-
-        # Add icon and tooltip to remove button
-        style = self.style()
-        self.remove_point_button.setIcon(
-            style.standardIcon(QStyle.StandardPixmap.SP_DialogCancelButton)
-        )
-        self.remove_point_button.setToolTip("Remove this point")
-
-        # Add the horizontal layout to the main layout
-        self.main_layout.addLayout(top_panel_layout)
-
-        # Ensure the top panels don't stretch vertically
-        self.main_layout.setStretchFactor(top_panel_layout, 0)
-
-    def _remove_point(self):
-        """Removes the current evaluation point from the ground truth without confirmation"""
-
-        if self.current_point_index is None or not self.ground_truth_data["points"]:
-            logger.error("No point selected to remove")
-            return
-
-        current_index = self.current_point_index
-
-        # Verify the index is valid before removing
-        if current_index < 0 or current_index >= len(self.ground_truth_data["points"]):
-            logger.error(
-                f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points']) - 1}"
-            )
-            return
-
-        del self.ground_truth_data["points"][current_index]
-
-        # Handle index adjustment after removal
-        if len(self.ground_truth_data["points"]) == 0:
-            # No more points left
-            logger.info("All points removed")
-            self.current_point_index = None
-            self.point_description_label.setText("No points remaining.")
-            self.prev_button.setEnabled(False)
-            self.next_button.setEnabled(False)
-            self.confirm_button.setEnabled(False)
-            self.remove_point_button.setEnabled(False)
-        else:
-            # Adjust index if we removed the last point
-            if current_index >= len(self.ground_truth_data["points"]):
-                self.current_point_index = len(self.ground_truth_data["points"]) - 1
-            else:
-                self.current_point_index = current_index
-
-            # Load the point at the adjusted index
-            self._load_point(self.current_point_index)
-
-        # update the ground truth
-        self._save_ground_truth()
-
-    def _create_left_panel(self):
-        """Creates the left panel containing the scrollable list of fetched text items."""
-        left_groupbox = QGroupBox("Fetched Texts (Click to Select, Button to Remove)")
-        left_outer_layout = QVBoxLayout(left_groupbox)
-        # Set a minimum width for the fetched texts panel
-        left_groupbox.setMinimumWidth(300)
-
-        # Scroll Area
-        self.left_scroll_area = QScrollArea()
-        self.left_scroll_area.setWidgetResizable(True)
-        self.left_scroll_area.setFrameShape(QFrame.Shape.NoFrame)
-
-        # Container widget inside ScrollArea
-        self.left_list_widget = QWidget()
-        self.left_list_layout = QVBoxLayout(self.left_list_widget)
-        self.left_list_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.left_list_layout.setContentsMargins(0, 0, 0, 0)
-        self.left_list_layout.setSpacing(5)
-
-        self.left_scroll_area.setWidget(self.left_list_widget)
-        left_outer_layout.addWidget(self.left_scroll_area)
-        # Add the left groupbox to the splitter
-        self.splitter.addWidget(left_groupbox)
-
-    def _create_right_panel(self):
-        """Creates the right panel displaying the currently selected text items."""
-        right_groupbox = QGroupBox("BM25 Search")
-        right_outer_layout = QVBoxLayout(right_groupbox)
-        # Set a minimum width for the search panel
-        right_groupbox.setMinimumWidth(350)
-
-        search_layout = QHBoxLayout()
-        self.search_input = QLineEdit()
-        # Ensure search field has sufficient width
-        self.search_input.setMinimumWidth(200)
-        self.search_input.setPlaceholderText("search field")
-        self.search_button = QPushButton("Search")
-
-        # connect search button and enter on field to bm25 search
-        self.search_button.clicked.connect(self.perform_bm25_search)
-        self.search_input.returnPressed.connect(self.perform_bm25_search)
-
-        search_layout.addWidget(self.search_input)
-        search_layout.addWidget(self.search_button)
-        right_outer_layout.addLayout(search_layout)
-
-        # Scroll Area for results
-        self.right_scroll_area = QScrollArea()
-        self.right_scroll_area.setWidgetResizable(True)
-        self.right_scroll_area.setFrameShape(QFrame.Shape.NoFrame)
-
-        # Container widget for results
-        self.right_list_widget = QWidget()
-        self.right_list_layout = QVBoxLayout(self.right_list_widget)
-        self.right_list_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.right_list_layout.setContentsMargins(0, 0, 0, 0)
-        self.right_list_layout.setSpacing(5)
-
-        self.right_scroll_area.setWidget(self.right_list_widget)
-        right_outer_layout.addWidget(self.right_scroll_area)
-        # Add the right groupbox to the splitter
-        self.splitter.addWidget(right_groupbox)
-
-    def _create_bottom_panel(self):
-        """Creates the bottom panel containing navigation and confirmation buttons."""
-        bottom_layout = QHBoxLayout()
-        bottom_layout.setSpacing(10)
-
-        self.prev_button = QPushButton("Previous")
-        self.confirm_button = QPushButton("Confirm")
-        self.next_button = QPushButton("Next")
-        # Add icons and tooltips for navigation buttons
-        style = self.style()
-        self.prev_button.setIcon(style.standardIcon(QStyle.StandardPixmap.SP_ArrowLeft))
-        self.next_button.setIcon(
-            style.standardIcon(QStyle.StandardPixmap.SP_ArrowRight)
-        )
-        self.confirm_button.setIcon(
-            style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton)
-        )
-        self.prev_button.setToolTip("Go to previous point")
-        self.next_button.setToolTip("Go to next point")
-        self.confirm_button.setToolTip("Toggle evaluation state")
-
-        bottom_layout.addStretch()
-        bottom_layout.addWidget(self.prev_button)
-        bottom_layout.addWidget(self.confirm_button)
-        bottom_layout.addWidget(self.next_button)
-        bottom_layout.addStretch()
-
-        self.main_layout.addLayout(bottom_layout)
-        # Ensure the bottom panel doesn't stretch vertically.
-        self.main_layout.setStretchFactor(bottom_layout, 0)
-
-        # --- Connect Signals ---
-        self.prev_button.clicked.connect(self.navigate_previous)
-        self.confirm_button.clicked.connect(self.confirm_point)
-        self.next_button.clicked.connect(self.navigate_next)
+        # Bottom Panel
+        self.bottom_panel = BottomPanel()
+        self.bottom_panel.prev_clicked.connect(self.navigate_previous)
+        self.bottom_panel.confirm_clicked.connect(self.confirm_point)
+        self.bottom_panel.next_clicked.connect(self.navigate_next)
+        self.main_layout.addWidget(self.bottom_panel)
 
     def _apply_stylesheet(self):
         """Loads and applies the stylesheet from an external CSS file."""
@@ -366,24 +158,30 @@ class AnnotationApp(QWidget):
         point_data = self.ground_truth_data["points"][point_index]
 
         # --- Clear existing UI elements ---
-        clear_layout(self.left_list_layout)
-        clear_layout(self.right_list_layout)
-        self.search_input.setText("")
+        self.left_panel.clear()
+        self.right_panel.clear()
+        self.right_panel.set_search_text("")
 
-        # also scroll both areas to the top
-        self.left_scroll_area.verticalScrollBar().setValue(0)
-        self.right_scroll_area.verticalScrollBar().setValue(0)
+        # Scroll both panels to the top
+        self.left_panel.scroll_to_top()
+        self.right_panel.scroll_to_top()
 
         # --- Populate Top Panel ---
-        self.position_label.setText(
+        self.top_panel.set_position_text(
             f"Point {point_index + 1} of {len(self.ground_truth_data['points'])}"
         )
 
         # Display the point ID if it exists
         point_id = point_data.get("id", "N/A")
-        self.id_label.setText(str(point_id))
+        self.top_panel.set_id_text(str(point_id))
 
-        self._populate_combo_box(point_index)
+        # Populate navigator dropdown
+        navigator_items = []
+        for idx, p_data in enumerate(self.ground_truth_data["points"]):
+            title = p_data.get("title", f"Point {idx + 1}")
+            is_eval = p_data.get("evaluated", False)
+            navigator_items.append((title, idx, is_eval))
+        self.top_panel.populate_navigator(navigator_items, point_index)
 
         # --- Populate Description ---
         keywords = point_data.get("keywords", [])
@@ -391,20 +189,18 @@ class AnnotationApp(QWidget):
         highlighted_description = highlight_keywords(
             description, keywords, self.HIGHLIGHT_COLOR
         )
-        self.point_description_label.setText(highlighted_description)
+        self.top_panel.set_description_text(highlighted_description)
 
         # --- Populate Left Panel (Fetched Texts) ---
         is_evaluated = point_data.get("evaluated", False)
-        point_keywords = point_data.get("keywords", [])  # Get point-level keywords
+        point_keywords = point_data.get("keywords", [])
 
         for item_data in point_data.get("fetched_texts", []):
             item_id = item_data.get("id")
             text = item_data.get("text", "")
             source = item_data.get("source", "unknown")
             metadata = item_data.get("metadata", {})
-            item_specific_highlights = item_data.get(
-                "highlights", []
-            )  # Get item-specific highlights
+            item_specific_highlights = item_data.get("highlights", [])
 
             if item_id is None:
                 logger.warning("Found fetched_text item without an ID. Skipping.")
@@ -433,7 +229,7 @@ class AnnotationApp(QWidget):
             )
 
             # Add item to the left panel
-            item_widget = self.add_item_to_left_panel(
+            item_widget = self.left_panel.add_item(
                 item_id, formatted_text, source, metadata
             )
 
@@ -442,39 +238,54 @@ class AnnotationApp(QWidget):
                 item_widget.set_selected(is_selected)
 
         # --- Update Button States ---
-        self.prev_button.setEnabled(point_index > 0)
-        self.next_button.setEnabled(
+        self.bottom_panel.set_prev_enabled(point_index > 0)
+        self.bottom_panel.set_next_enabled(
             point_index < len(self.ground_truth_data["points"]) - 1
         )
         # Confirm button is always enabled, but text changes
-        self.confirm_button.setText("Unconfirm" if is_evaluated else "Confirm")
+        self.bottom_panel.set_confirm_text("Unconfirm" if is_evaluated else "Confirm")
 
         # --- Disable/Enable Left Panel Items based on evaluation status ---
-        self._set_left_panel_enabled(
-            not is_evaluated
-        )  # Pass True if NOT evaluated (i.e., enabled)
+        self.left_panel.set_enabled(not is_evaluated)
 
-    def _populate_combo_box(self, point_index: int):
-        # --- Populate Title Navigator ---
-        # Block signals to prevent triggering navigation when we set the index inside the combo box
-        self.title_navigator.blockSignals(True)
-        self.title_navigator.clear()
-        for idx, p_data in enumerate(self.ground_truth_data["points"]):
-            title = p_data.get("title", f"Point {idx + 1}")
-            is_eval = p_data.get("evaluated", False)
-            prefix = "✓ " if is_eval else ""
-            self.title_navigator.addItem(f"{prefix}{title}", userData=idx)
+    def _remove_point(self):
+        """Removes the current evaluation point from the ground truth without confirmation"""
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
+            logger.error("No point selected to remove")
+            return
 
-        # Set the current item in the navigator without triggering the signal
-        self.title_navigator.setCurrentIndex(point_index)
-        self.title_navigator.blockSignals(False)
+        current_index = self.current_point_index
 
-    def _set_left_panel_enabled(self, enabled):
-        """Enable or disable all ListItemWidgets in the left panel."""
-        for i in range(self.left_list_layout.count()):
-            widget = self.left_list_layout.itemAt(i).widget()
-            if isinstance(widget, ListItemWidget):
-                widget.set_enabled_state(enabled)
+        # Verify the index is valid before removing
+        if current_index < 0 or current_index >= len(self.ground_truth_data["points"]):
+            logger.error(
+                f"Invalid point index {current_index}. Valid range: 0-{len(self.ground_truth_data['points']) - 1}"
+            )
+            return
+
+        del self.ground_truth_data["points"][current_index]
+
+        # Handle index adjustment after removal
+        if len(self.ground_truth_data["points"]) == 0:
+            # No more points left
+            logger.info("All points removed")
+            self.current_point_index = None
+            self.top_panel.set_description_text("No points remaining.")
+            self.bottom_panel.set_prev_enabled(False)
+            self.bottom_panel.set_next_enabled(False)
+            self.bottom_panel.set_confirm_text("Confirm")
+        else:
+            # Adjust index if we removed the last point
+            if current_index >= len(self.ground_truth_data["points"]):
+                self.current_point_index = len(self.ground_truth_data["points"]) - 1
+            else:
+                self.current_point_index = current_index
+
+            # Load the point at the adjusted index
+            self._load_point(self.current_point_index)
+
+        # update the ground truth
+        self._save_ground_truth()
 
     # --- Slots for UI Interaction ---
     @Slot()
@@ -508,8 +319,8 @@ class AnnotationApp(QWidget):
         )
 
         # Update UI elements
-        self.confirm_button.setText("Unconfirm" if new_state else "Confirm")
-        self._set_left_panel_enabled(not new_state)  # Enable if new_state is False
+        self.bottom_panel.set_confirm_text("Unconfirm" if new_state else "Confirm")
+        self.left_panel.set_enabled(not new_state)  # Enable if new_state is False
 
         # Save the change
         self._save_ground_truth()
@@ -526,13 +337,13 @@ class AnnotationApp(QWidget):
             # Load next
             self._load_point(self.current_point_index + 1)
 
-    @Slot(int)  # Slot receives the new index from the QComboBox signal
+    @Slot(int)
     def _navigate_via_navigator(self, combo_box_index):
         """Navigates to the point selected in the title navigator dropdown."""
         if combo_box_index == -1:  # Should not happen unless list is empty
             return
 
-        target_point_index = self.title_navigator.itemData(combo_box_index)
+        target_point_index = self.top_panel.title_navigator.itemData(combo_box_index)
 
         # Check if it's a valid index and different from the current one
         if (
@@ -547,8 +358,8 @@ class AnnotationApp(QWidget):
             # Load the selected point
             self._load_point(target_point_index)
 
-    @Slot()
-    def perform_bm25_search(self):
+    @Slot(str)
+    def perform_bm25_search(self, search_query=None):
         """
         Performs a BM25 search based on the input from the search bar and displays the results on the right panel
         """
@@ -558,23 +369,25 @@ class AnnotationApp(QWidget):
 
         point_data = self.ground_truth_data["points"][self.current_point_index]
 
-        # clear previous results
-        clear_layout(self.right_list_layout)
+        # Clear previous results
+        self.right_panel.clear()
 
         keywords = point_data.get("keywords", [])
         description = point_data.get("description", "")
         if not description:
             logger.warning("No description provided for the current point.")
 
-        search_query = self.search_input.text()
+        # If no search query provided, use the one from the search input
+        if search_query is None or not search_query:
+            search_query = self.right_panel.get_search_text()
+            
+        # If still empty, use description
         if not search_query:
-            # use current description as the query if no search query is provided
             search_query = description
 
         logger.info(f"Performing BM25 search with query: {search_query}")
 
         # Perform the search using the BM25 index
-        # TODO: Make search more configurable
         results = self.bm25_index.get_top_n(search_query, self.bm25_texts, n=20)
 
         logger.info(f"Found {len(results)} BM25 search results")
@@ -582,9 +395,7 @@ class AnnotationApp(QWidget):
         # Display results in the right panel
         if not results:
             # Show a message when no results are found
-            no_results_label = QLabel("No results found for this query.")
-            no_results_label.setStyleSheet("padding: 10px; color: #888888;")
-            self.right_list_layout.addWidget(no_results_label)
+            self.right_panel.add_message("No results found for this query.")
             return
 
         used_ids = [
@@ -594,7 +405,8 @@ class AnnotationApp(QWidget):
         ]
 
         # Add each result to the right panel
-        for i, result_text in enumerate(results):
+        results_added = False
+        for result_text in results:
             # get the id
             actual_id = self.text_to_id_map.get(result_text)
 
@@ -615,24 +427,18 @@ class AnnotationApp(QWidget):
                 result_text, terms_to_highlight_in_bm25, self.HIGHLIGHT_COLOR
             )
             formatted_text = format_md_text_to_html(highlighted_text)
-            # create the widget for the result
-            item_widget = ListItemWidget(
-                actual_id, formatted_text, "bm25-appended", "Add", None
-            )
+            
+            # Add the result to the right panel
+            self.right_panel.add_item(actual_id, formatted_text)
+            results_added = True
 
-            # Connect the button click to add this result to fetched_texts
-            item_widget.button_clicked_signal.connect(self.add_bm25_result_to_fetched)
-            self.right_list_layout.addWidget(item_widget)
-
-        # if no widgets were added, search returned nothing
-        if self.right_list_layout.count() == 0:
-            no_results_label = QLabel(
+        # If no widgets were added, search returned nothing
+        if not results_added:
+            self.right_panel.add_message(
                 "No results found for this query, or results already on left side."
             )
-            no_results_label.setStyleSheet("padding: 10px; color: #888888;")
-            self.right_list_layout.addWidget(no_results_label)
 
-    @Slot(QWidget)  # Connected to ListItemWidget's item_clicked_signal
+    @Slot(QWidget)
     def mark_text_as_selected(self, item_widget):
         """
         Handles clicking on a fetched text item in the left panel.
@@ -642,8 +448,6 @@ class AnnotationApp(QWidget):
         Does nothing if the current point is marked as 'evaluated'.
         """
         if self.current_point_index is None or not self.ground_truth_data["points"]:
-            return
-        if not isinstance(item_widget, ListItemWidget):
             return
 
         point_data = self.ground_truth_data["points"][self.current_point_index]
@@ -686,20 +490,15 @@ class AnnotationApp(QWidget):
             item_widget.set_selected(False)  # Update visual state
             logger.info(f"Removed item ID {item_id_to_add} from selected_texts.")
 
-    @Slot(
-        QWidget
-    )  # Connected to ListItemWidget's button_clicked_signal (Remove button)
+    @Slot(QWidget)
     def remove_fetched_text(self, item_widget):
         """
         Handles clicking the 'Remove' button on a fetched text item in the left panel.
         Removes the item from the 'fetched_texts' list in the data model,
-        removes its widget from the UI, and also removes it from 'selected_texts'
-        if it was selected.
+        and also removes it from 'selected_texts' if it was selected.
         Does nothing if the current point is marked as 'evaluated'.
         """
         if self.current_point_index is None or not self.ground_truth_data["points"]:
-            return
-        if not isinstance(item_widget, ListItemWidget):
             return
 
         point_data = self.ground_truth_data["points"][self.current_point_index]
@@ -719,9 +518,6 @@ class AnnotationApp(QWidget):
 
         if len(point_data["fetched_texts"]) < initial_length:
             logger.info(f"Removed item ID {item_id_to_remove} from fetched_texts.")
-            # Remove the widget from the UI
-            self.left_list_layout.removeWidget(item_widget)
-            item_widget.deleteLater()
 
             # Also remove from selected_texts if it was there
             selected_texts = point_data.get("selected_texts", [])
@@ -744,8 +540,6 @@ class AnnotationApp(QWidget):
         Does nothing if the current point is marked as 'evaluated'.
         """
         if self.current_point_index is None or not self.ground_truth_data["points"]:
-            return
-        if not isinstance(item_widget, ListItemWidget):
             return
 
         point_data = self.ground_truth_data["points"][self.current_point_index]
@@ -781,21 +575,7 @@ class AnnotationApp(QWidget):
         highlighted_text = highlight_keywords(
             result_text, keywords, self.HIGHLIGHT_COLOR
         )
-        self.add_item_to_left_panel(result_id, highlighted_text, "bm25-appended", None)
+        formatted_text = format_md_text_to_html(highlighted_text)
+        self.left_panel.add_item(result_id, formatted_text, "bm25-appended")
 
-        # remove from right panel
-        item_widget.deleteLater()  # Remove the widget from the right panel
         # Note: Saving happens on navigation or confirm
-
-    # --- Helper Methods ---
-    def add_item_to_left_panel(self, item_id, text, source, metadata):
-        """Adds a fetched text item widget to the left scrollable list."""
-        item_widget = ListItemWidget(item_id, text, source, "Remove", metadata)
-
-        # Connect the REMOVE button signal
-        item_widget.button_clicked_signal.connect(self.remove_fetched_text)
-        # Connect the ITEM CLICK signal (for selecting)
-        item_widget.item_clicked_signal.connect(self.mark_text_as_selected)
-
-        self.left_list_layout.addWidget(item_widget)
-        return item_widget
