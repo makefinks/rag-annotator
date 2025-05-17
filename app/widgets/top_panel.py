@@ -1,5 +1,6 @@
 import logging
 from PySide6.QtWidgets import (
+    QWidget,
     QGroupBox,
     QVBoxLayout,
     QHBoxLayout,
