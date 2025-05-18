@@ -1,6 +1,6 @@
 import json
-import os
 from jsonschema import validate
+from pathlib import Path
 
 def load_json_schema(schema_path):
     with open(schema_path, "r", encoding="utf-8") as f:
@@ -13,6 +13,7 @@ def validate_ground_truth(data, schema_path=None):
     """
     if schema_path is None:
         # Default location 
-        schema_path = os.path.join(os.path.dirname(__file__), "ground_truth_schema.json")
+        app_dir = Path(__file__).resolve().parent.parent
+        schema_path = app_dir / "resources" / "ground_truth_schema.json"
     schema = load_json_schema(schema_path)
     validate(instance=data, schema=schema)
