@@ -1,8 +1,15 @@
 # RAG Annotation Tool for Ground Truth Creation
 
-The annotation tool can be used to create a ground truth for evaluating retrieval systems.
+The annotation tool can be used to simplify the ground truth creation process for the evaluation of retrieval systems.
 
-It allows for selecting a set of texts that are relevant to a given Text / Description.
+It allows for selecting a set of texts that are relevant to a given text / description and supports the following features:
+- **Interactive selection** of relevant texts
+- Metadata display and **highlighting of keywords and phrases**
+- Built in **BM25 search capabilities** to locate and include additional texts from the corpus 
+
+## Demo
+![Gif demo](app/images/demo.gif)
+
 ## Installation
 ### Clone the repository
 
@@ -11,11 +18,12 @@ git clone https://github.com/makefinks/rag-annotator.git
 cd rag-annotator
 ```
 
-### Install requriements (uv is recommended)
+### Install requirements (uv is recommended)
 ```bash
 uv sync
 ```
-
+> alternatively use: 
+> pip install -r requirements.txt
 ### Activate the virtual environment
 ```bash
 source .venv/bin/activate
