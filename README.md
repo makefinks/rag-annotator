@@ -48,7 +48,7 @@ The input JSON must contain the following main fields:
   - `id`: Integer identifier.
   - `text`: The text content.
 
-Refer to `utils/ground_truth_schema.json` for the complete and up-to-date schema.
+Refer to `app/utils/ground_truth_schema.json` for the complete and up-to-date schema.
 
 ### Usage of the tool
 ```bash

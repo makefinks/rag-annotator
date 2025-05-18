@@ -12,11 +12,11 @@ from app.widgets.right_panel import RightPanel
 from app.widgets.bottom_panel import BottomPanel
 from app.utils.ui_helpers import highlight_keywords
 from app.utils.data_handler import save_ground_truth
-from utils.search.bm25_handler import (
+from app.utils.bm25_handler import (
     get_or_build_index,
     extract_texts_from_ground_truth,
 )
-from utils.formatting import format_md_text_to_html
+from app.utils.formatting import format_md_text_to_html
 
 logger = logging.getLogger(__name__)
 

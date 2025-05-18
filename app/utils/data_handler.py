@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from jsonschema import ValidationError
-from utils.validation import validate_ground_truth
+from app.utils.validation import validate_ground_truth
 from PySide6.QtWidgets import QMessageBox
 from typing import Optional, List, Dict, Any
 
