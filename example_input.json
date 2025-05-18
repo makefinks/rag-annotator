@@ -1,323 +1,370 @@
 {
-    "document_name": "EV Production Optimization",
-    "points": [
-        {
-            "id": 23,
-            "title": "Production Line Optimization",
-            "description": "<b>Production Line Optimization:</b> Focus on proposals for optimizing the *main assembly line* (Line A) for the new EV model. ",
-            "keywords": [
-                "throughput",
-                "bottleneck",
-                "automation",
-                "cycle time"
-            ],
-            "fetched_texts": [
-                {
-                    "id": 1,
-                    "text": "Proposal suggests implementing **AGVs** (Automated Guided Vehicles) for material transport between stations 3 and 4 on Line A. This change is projected to yield an estimated cycle time reduction of approximately 5%. \n\nHowever, it's crucial to note that this *Requires significant infrastructure change*, including potential floor modifications and integration with the central control system. \n\n Key metrics comparison:\n - Current cycle time (CT): 55 seconds per unit\n - Projected CT post-AGV: 52 seconds per unit\n\nFurther considerations involve potential bottleneck shifts downstream and the need for robust safety protocols. Concerns about integration with the existing Manufacturing Execution System (MES) must be addressed during the planning phase to ensure seamless data flow and operational visibility. The automation level increase is significant.",
-                    "source": "llm",
-                    "highlights": [
-                        "Automated Guided Vehicles",
-                        "cycle time reduction",
-                        "MES"
-                    ],
-                    "metadata": {
-                        "description": "This proposal outlines the implementation of AGVs for material transport between stations 3 and 4 on Line A, highlighting the projected cycle time reduction and necessary infrastructure changes.",
-                        "source": "test",
-                        "reason": "Another stupid reason to thawjefwaejfaskdfjasldfjaskldfkjl"
-                    }
-                },
-                {
-                    "id": 2,
-                    "text": "Detailed analysis of Line A performance data clearly indicates a major bottleneck at the chassis marriage station (Station 5). The current throughput of the entire line is significantly limited by the manual alignment process required at this stage. \n\nRecommendation: Initiate a feasibility study to investigate the implementation of a robotic arm solution equipped with an advanced vision system for automated alignment. \n\nPreliminary calculations suggest a _Potential Return on Investment (ROI)_ within 18 months, primarily driven by increased throughput and reduced labor costs associated with manual alignment. This automation step is critical. **See Appendix B for comprehensive technical specifications and cost breakdown.** Further analysis should model the impact on upstream and downstream cycle time.",
-                    "source": "semantic",
-                    "highlights": [
-                        "major bottleneck at the chassis marriage station",
-                        "robotic arm solution",
-                        "Potential Return on Investment (ROI)"
-                    ]
-                },
-                {
-                    "id": 3,
-                    "text": "Reducing cycle time below 50s for Line A seems unfeasible without major retooling. Focus should be on eliminating unscheduled downtime and addressing the Station 5 bottleneck. Minor automation upgrades at paint shop interface planned for Q3.",
-                    "source": "llm",
-                    "highlights": [
-                        "Reducing cycle time below 50s for Line A seems unfeasible",
-                        "unscheduled downtime"
-                    ]
-                },
-                {
-                    "id": 4,
-                    "text": "The simulation model highlights the bottleneck at Station 5. Increasing buffer size before this station might mitigate some throughput loss but doesn't solve the core cycle time issue. Full automation is the long-term solution. *Misaligned text block start.* \n\n This section details the simulation parameters used.",
-                    "source": "semantic",
-                    "highlights": [
-                        "Increasing buffer size before this station might mitigate some throughput loss",
-                        "Full automation is the long-term solution"
-                    ]
-                },
-                {
-                    "id": 5,
-                    "text": "A recent pilot project on Line A introduced predictive maintenance sensors on critical automation equipment. Early results show a 12% reduction in unplanned downtime, contributing to improved throughput and more stable cycle times. Expansion of this program is recommended.",
-                    "source": "llm",
-                    "highlights": [
-                        "predictive maintenance sensors",
-                        "12% reduction in unplanned downtime",
-                        "Expansion of this program is recommended"
-                    ]
-                },
-                {
-                    "id": 6,
-                    "text": "Case study: A comparable EV assembly line achieved a 7% increase in throughput by optimizing workstation layout and reducing walking distances for operators. Simulation tools were used to identify inefficiencies and test layout changes before implementation.",
-                    "source": "semantic",
-                    "highlights": [
-                        "7% increase in throughput",
-                        "optimizing workstation layout"
-                    ]
-                },
-                {
-                    "id": 7,
-                    "text": "Implementation of a digital twin for Line A is under consideration. This would enable real-time monitoring and scenario analysis for cycle time, bottleneck prediction, and automation impact assessment. Initial investment is high, but long-term benefits include faster optimization cycles.",
-                    "source": "llm",
-                    "highlights": [
-                        "digital twin for Line A",
-                        "real-time monitoring and scenario analysis"
-                    ]
-                },
-                {
-                    "id": 8,
-                    "text": "Analysis of downtime logs reveals that material shortages at Station 2 occasionally disrupt the flow of Line A. Integration of real-time inventory tracking with the MES could help prevent these interruptions and support higher throughput.",
-                    "source": "semantic",
-                    "highlights": [
-                        "material shortages at Station 2",
-                        "Integration of real-time inventory tracking with the MES"
-                    ]
-                },
-                {
-                    "id": 9,
-                    "text": "A review of maintenance logs shows that unscheduled downtime at Station 7 is primarily due to sensor misalignment. Upgrading to more robust sensor mounts is recommended to improve reliability.",
-                    "source": "semantic"
-                },
-                {
-                    "id": 10,
-                    "text": "The current MES lacks real-time alerting for cycle time deviations. Adding this feature could enable faster response to emerging bottlenecks, especially at critical stations.",
-                    "source": "llm"
-                },
-                {
-                    "id": 11,
-                    "text": "Operator feedback indicates that ergonomic improvements at Station 4 have reduced fatigue and minor stoppages. Further study is needed to quantify the impact on overall cycle time.",
-                    "source": "semantic"
-                },
-                {
-                    "id": 12,
-                    "text": "A recent kaizen event focused on the paint shop interface identified several quick wins, including improved part staging and reduced manual handling. Implementation is scheduled for next quarter.",
-                    "source": "llm"
-                },
-                {
-                    "id": 13,
-                    "text": "Throughput simulations show that increasing the number of parallel workstations at Station 6 could yield a 5% cycle time reduction, but space constraints are a limiting factor.",
-                    "source": "semantic"
-                },
-                {
-                    "id": 14,
-                    "text": "Analysis of shift data reveals that cycle time variability is highest during shift changes. Standardizing shift handover procedures may help stabilize throughput.",
-                    "source": "llm"
-                }
-            ],
-            "selected_texts": [],
-            "evaluated": false
-        },
-        {
-            "id": 24,
-            "title": "Supplier Quality Assurance",
-            "description": "<i>Supplier Quality Assurance:</i> Evaluate risks and mitigation strategies for critical component suppliers, particularly for battery packs and semiconductors. ",
-            "keywords": [
-                "supplier risk",
-                "quality control",
-                "audit",
-                "semiconductor",
-                "battery"
-            ],
-            "fetched_texts": [
-                {
-                    "id": 15,
-                    "text": "Recent audit of Supplier X (Tier 1, battery cells) revealed minor non-conformances in quality control documentation. Corrective action plan requested. No immediate production impact, but elevates long-term supplier risk. **Follow-up audit scheduled for Q4.**",
-                    "source": "bm25-appended"
-                },
-                {
-                    "id": 16,
-                    "text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
-                    "source": "llm"
-                },
-                {
-                    "id": 17,
-                    "text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months.",
-                    "source": "semantic"
-                },
-                {
-                    "id": 18,
-                    "text": "Improving quality control requires better data sharing with suppliers. The current portal lacks real-time capabilities. An audit of the data exchange process is recommended. This impacts both battery and semiconductor supply chains. Reducing supplier risk needs investment here.",
-                    "source": "llm"
-                },
-                {
-                    "id": 19,
-                    "text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as battery packs and semiconductors. Effective quality control processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global semiconductor shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks.",
-                    "source": "bm25-appended",
-                    "highlights": [
-                        "battery",
-                        "quality control",
-                        "semiconductor"
-                    ]
-                }
-            ],
-            "selected_texts": [
-                {
-                    "id": 16,
-                    "text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
-                    "source": "llm"
-                },
-                {
-                    "id": 17,
-                    "text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months.",
-                    "source": "semantic"
-                }
-            ],
-            "evaluated": false
-        },
-        {
-            "id": 25,
-            "title": "Logistics & Warehousing",
-            "description": "<b>Logistics & Warehousing:</b> Review proposals for JIT (Just-In-Time) delivery improvements and warehouse space utilization for the new powertrain components. ",
-            "keywords": [
-                "logistics",
-                "JIT",
-                "warehouse",
-                "inventory"
-            ],
-            "fetched_texts": [
-                {
-                    "id": 20,
-                    "text": "Logistics and warehousing play a pivotal role in supporting just-in-time (JIT) delivery models and optimizing space utilization for new powertrain components. The adoption of real-time GPS tracking systems, integrated with both internal inventory management and external logistics provider platforms, enables more accurate monitoring of shipments and reduces the need for excessive buffer inventory. This, in turn, can free up valuable warehouse space and delay the need for costly expansions. However, implementing such systems requires significant investment in API integration and data infrastructure, as well as close collaboration with logistics partners. Additionally, optimizing warehouse layouts and inventory management software can further reduce costs and improve operational efficiency. It is essential to balance the benefits of stricter JIT protocols with the potential risks of line stoppages due to delayed deliveries. Continuous analysis of logistics costs, space utilization, and process bottlenecks is necessary to ensure that the supply chain remains agile and responsive to changing production demands.",
-                    "source": "semantic",
-                    "highlights": [
-                        "real-time GPS tracking",
-                        "buffer inventory",
-                        "warehouse space utilization"
-                    ]
-                }
-            ],
-            "selected_texts": [],
-            "evaluated": false
-        },
-        {
-            "id": 26,
-            "title": "Sustainability Initiatives",
-            "description": "<b>Sustainability Initiatives:</b> Evaluate proposals for reducing the environmental impact of the new EV production line, including energy-efficient manufacturing processes and waste reduction programs.",
-            "keywords": [
-                "sustainability",
-                "energy efficiency",
-                "waste reduction",
-                "environmental impact"
-            ],
-            "fetched_texts": [
-                {
-                    "id": 21,
-                    "text": "Proposal for new EV line: Implement closed-loop water recycling system for paint shop, projected to reduce water consumption by 30%. Additionally, explore solar panel installation on factory roof to offset energy usage. Key areas: water recycling, solar energy.",
-                    "source": "llm",
-                    "highlights": [
-                        "closed-loop water recycling",
-                        "solar panel installation",
-                        "water consumption by 30%"
-                    ]
-                }
-            ],
-            "selected_texts": [],
-            "evaluated": false
-        }
-    ],
-    "all_texts": [
-        {
-            "id": 1,
-            "text": "Proposal suggests implementing **AGVs** (Automated Guided Vehicles) for material transport between stations 3 and 4 on Line A. This change is projected to yield an estimated cycle time reduction of approximately 5%. \n\nHowever, it's crucial to note that this *Requires significant infrastructure change*, including potential floor modifications and integration with the central control system. \n\n Key metrics comparison:\n - Current cycle time (CT): 55 seconds per unit\n - Projected CT post-AGV: 52 seconds per unit\n\nFurther considerations involve potential bottleneck shifts downstream and the need for robust safety protocols. Concerns about integration with the existing Manufacturing Execution System (MES) must be addressed during the planning phase to ensure seamless data flow and operational visibility. The automation level increase is significant."
-        },
-        {
-            "id": 2,
-            "text": "Detailed analysis of Line A performance data clearly indicates a major bottleneck at the chassis marriage station (Station 5). The current throughput of the entire line is significantly limited by the manual alignment process required at this stage. \n\nRecommendation: Initiate a feasibility study to investigate the implementation of a robotic arm solution equipped with an advanced vision system for automated alignment. \n\nPreliminary calculations suggest a _Potential Return on Investment (ROI)_ within 18 months, primarily driven by increased throughput and reduced labor costs associated with manual alignment. This automation step is critical. **See Appendix B for comprehensive technical specifications and cost breakdown.** Further analysis should model the impact on upstream and downstream cycle time."
-        },
-        {
-            "id": 3,
-            "text": "Reducing cycle time below 50s for Line A seems unfeasible without major retooling. Focus should be on eliminating unscheduled downtime and addressing the Station 5 bottleneck. Minor automation upgrades at paint shop interface planned for Q3."
-        },
-        {
-            "id": 4,
-            "text": "The simulation model highlights the bottleneck at Station 5. Increasing buffer size before this station might mitigate some throughput loss but doesn't solve the core cycle time issue. Full automation is the long-term solution. *Misaligned text block start.* \n\n This section details the simulation parameters used."
-        },
-        {
-            "id": 5,
-            "text": "A recent pilot project on Line A introduced predictive maintenance sensors on critical automation equipment. Early results show a 12% reduction in unplanned downtime, contributing to improved throughput and more stable cycle times. Expansion of this program is recommended."
-        },
-        {
-            "id": 6,
-            "text": "Case study: A comparable EV assembly line achieved a 7% increase in throughput by optimizing workstation layout and reducing walking distances for operators. Simulation tools were used to identify inefficiencies and test layout changes before implementation."
-        },
-        {
-            "id": 7,
-            "text": "Implementation of a digital twin for Line A is under consideration. This would enable real-time monitoring and scenario analysis for cycle time, bottleneck prediction, and automation impact assessment. Initial investment is high, but long-term benefits include faster optimization cycles."
-        },
-        {
-            "id": 8,
-            "text": "Analysis of downtime logs reveals that material shortages at Station 2 occasionally disrupt the flow of Line A. Integration of real-time inventory tracking with the MES could help prevent these interruptions and support higher throughput."
-        },
-        {
-            "id": 9,
-            "text": "A review of maintenance logs shows that unscheduled downtime at Station 7 is primarily due to sensor misalignment. Upgrading to more robust sensor mounts is recommended to improve reliability."
-        },
-        {
-            "id": 10,
-            "text": "The current MES lacks real-time alerting for cycle time deviations. Adding this feature could enable faster response to emerging bottlenecks, especially at critical stations."
-        },
-        {
-            "id": 11,
-            "text": "Operator feedback indicates that ergonomic improvements at Station 4 have reduced fatigue and minor stoppages. Further study is needed to quantify the impact on overall cycle time."
-        },
-        {
-            "id": 12,
-            "text": "A recent kaizen event focused on the paint shop interface identified several quick wins, including improved part staging and reduced manual handling. Implementation is scheduled for next quarter."
-        },
-        {
-            "id": 13,
-            "text": "Throughput simulations show that increasing the number of parallel workstations at Station 6 could yield a 5% cycle time reduction, but space constraints are a limiting factor."
-        },
-        {
-            "id": 14,
-            "text": "Analysis of shift data reveals that cycle time variability is highest during shift changes. Standardizing shift handover procedures may help stabilize throughput."
-        },
-        {
-            "id": 15,
-            "text": "Recent audit of Supplier X (Tier 1, battery cells) revealed minor non-conformances in quality control documentation. Corrective action plan requested. No immediate production impact, but elevates long-term supplier risk. **Follow-up audit scheduled for Q4.**"
-        },
-        {
-            "id": 16,
-            "text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B."
-        },
-        {
-            "id": 17,
-            "text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months."
-        },
-        {
-            "id": 18,
-            "text": "Improving quality control requires better data sharing with suppliers. The current portal lacks real-time capabilities. An audit of the data exchange process is recommended. This impacts both battery and semiconductor supply chains. Reducing supplier risk needs investment here."
-        },
-        {
-            "id": 19,
-            "text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as battery packs and semiconductors. Effective quality control processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global semiconductor shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks."
-        },
-        {
-            "id": 20,
-            "text": "Logistics and warehousing play a pivotal role in supporting just-in-time (JIT) delivery models and optimizing space utilization for new powertrain components. The adoption of real-time GPS tracking systems, integrated with both internal inventory management and external logistics provider platforms, enables more accurate monitoring of shipments and reduces the need for excessive buffer inventory. This, in turn, can free up valuable warehouse space and delay the need for costly expansions. However, implementing such systems requires significant investment in API integration and data infrastructure, as well as close collaboration with logistics partners. Additionally, optimizing warehouse layouts and inventory management software can further reduce costs and improve operational efficiency. It is essential to balance the benefits of stricter JIT protocols with the potential risks of line stoppages due to delayed deliveries. Continuous analysis of logistics costs, space utilization, and process bottlenecks is necessary to ensure that the supply chain remains agile and responsive to changing production demands."
-        },
-        {
-            "id": 21,
-            "text": "Proposal for new EV line: Implement closed-loop water recycling system for paint shop, projected to reduce water consumption by 30%. Additionally, explore solar panel installation on factory roof to offset energy usage. Key areas: water recycling, solar energy."
-        }
-    ]
+	"document_name": "EV Production Optimization",
+	"points": [
+		{
+			"id": 24,
+			"title": "Supplier Quality Assurance",
+			"description": "<i>Supplier Quality Assurance:</i> Evaluate risks and mitigation strategies for critical component suppliers, particularly for battery packs and semiconductors. ",
+			"keywords": [
+				"supplier risk",
+				"quality control",
+				"audit",
+				"semiconductor",
+				"battery"
+			],
+			"fetched_texts": [
+				{
+					"id": 15,
+					"text": "Recent audit of Supplier X (Tier 1, battery cells) revealed minor non-conformances in quality control documentation. Corrective action plan requested. No immediate production impact, but elevates long-term supplier risk. **Follow-up audit scheduled for Q4.**",
+					"source": "bm25-appended",
+					"highlights": [
+						"minor non-conformances in quality control documentation",
+						"Corrective action plan requested",
+						"Follow-up audit scheduled for Q4"
+					],
+					"metadata": {
+						"description": "Initial audit findings for Supplier X.",
+						"reviewed_by": "QA Analyst",
+						"confidence_score": 0.85
+					}
+				},
+				{
+					"id": 16,
+					"text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
+					"source": "llm",
+					"highlights": [
+						"global semiconductor shortage continues to pose a significant and persistent supplier risk",
+						"dual-sourcing agreements for key Microcontroller Units (MCUs)",
+						"quality control processes for semiconductors rely heavily on incoming inspection procedures",
+						"push for more comprehensive supplier-side testing and data sharing agreements",
+						"audit of supplier testing capabilities is recommended"
+					],
+					"metadata": {
+						"description": "Selected: Data sharing and quality control portal.",
+						"reviewed_by": "IT Integrator",
+						"confidence_score": 0.81
+					}
+				},
+				{
+					"id": 17,
+					"text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months.",
+					"source": "semantic",
+					"highlights": [
+						"failed their last audit",
+						"High supplier risk identified",
+						"Place supplier on probation",
+						"Potential impact on battery management system production within 6 months"
+					],
+					"metadata": {
+						"description": "Supplier Y audit failure and risk.",
+						"reviewed_by": "Risk Manager",
+						"confidence_score": 0.78
+					}
+				},
+				{
+					"id": 19,
+					"text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as battery packs and semiconductors. Effective quality control processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global semiconductor shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks.",
+					"source": "bm25-appended",
+					"highlights": [
+						"Supplier quality assurance is a critical component of risk management",
+						"Effective quality control processes must extend beyond incoming inspection",
+						"dual-sourcing agreements for key microcontroller units (MCUs)",
+						"investing in supplier-side testing capabilities and real-time data exchange platforms"
+					],
+					"metadata": {
+						"description": "Overview of supplier QA best practices.",
+						"reviewed_by": "Industry Expert",
+						"confidence_score": 0.95
+					}
+				}
+			],
+			"selected_texts": [
+				{
+					"id": 18,
+					"text": "Improving quality control requires better data sharing with suppliers. The current portal lacks real-time capabilities. An audit of the data exchange process is recommended. This impacts both battery and semiconductor supply chains. Reducing supplier risk needs investment here.",
+					"source": "llm"
+				},
+				{
+					"id": 16,
+					"text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
+					"source": "llm",
+					"highlights": [
+						"global semiconductor shortage continues to pose a significant and persistent supplier risk",
+						"dual-sourcing agreements for key Microcontroller Units (MCUs)",
+						"quality control processes for semiconductors rely heavily on incoming inspection procedures",
+						"push for more comprehensive supplier-side testing and data sharing agreements",
+						"audit of supplier testing capabilities is recommended"
+					],
+					"metadata": {
+						"description": "Selected: Data sharing and quality control portal.",
+						"reviewed_by": "IT Integrator",
+						"confidence_score": 0.81
+					}
+				},
+				{
+					"id": 19,
+					"text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as battery packs and semiconductors. Effective quality control processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global semiconductor shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks.",
+					"source": "bm25-appended",
+					"highlights": [
+						"Supplier quality assurance is a critical component of risk management",
+						"Effective quality control processes must extend beyond incoming inspection",
+						"dual-sourcing agreements for key microcontroller units (MCUs)",
+						"investing in supplier-side testing capabilities and real-time data exchange platforms"
+					],
+					"metadata": {
+						"description": "Overview of supplier QA best practices.",
+						"reviewed_by": "Industry Expert",
+						"confidence_score": 0.95
+					}
+				}
+			],
+			"evaluated": false
+		},
+		{
+			"id": 25,
+			"title": "Logistics & Warehousing",
+			"description": "<b>Logistics & Warehousing:</b> Review proposals for JIT (Just-In-Time) delivery improvements and warehouse space utilization for the new powertrain components. ",
+			"keywords": ["logistics", "JIT", "warehouse", "inventory"],
+			"fetched_texts": [
+				{
+					"id": 20,
+					"text": "Logistics and warehousing play a pivotal role in supporting just-in-time (JIT) delivery models and optimizing space utilization for new powertrain components. The adoption of real-time GPS tracking systems, integrated with both internal inventory management and external logistics provider platforms, enables more accurate monitoring of shipments and reduces the need for excessive buffer inventory. This, in turn, can free up valuable warehouse space and delay the need for costly expansions. However, implementing such systems requires significant investment in API integration and data infrastructure, as well as close collaboration with logistics partners. Additionally, optimizing warehouse layouts and inventory management software can further reduce costs and improve operational efficiency. It is essential to balance the benefits of stricter JIT protocols with the potential risks of line stoppages due to delayed deliveries. Continuous analysis of logistics costs, space utilization, and process bottlenecks is necessary to ensure that the supply chain remains agile and responsive to changing production demands.",
+					"source": "semantic",
+					"highlights": [
+						"real-time GPS tracking",
+						"buffer inventory",
+						"warehouse space utilization"
+					],
+					"metadata": {
+						"description": "JIT logistics and warehouse optimization.",
+						"reviewed_by": "Logistics Analyst",
+						"confidence_score": 0.88
+					}
+				}
+			],
+			"selected_texts": [],
+			"evaluated": false
+		},
+		{
+			"id": 26,
+			"title": "Sustainability Initiatives",
+			"description": "<b>Sustainability Initiatives:</b> Evaluate proposals for reducing the environmental impact of the new EV production line, including energy-efficient manufacturing processes and waste reduction programs.",
+			"keywords": [
+				"sustainability",
+				"energy efficiency",
+				"waste reduction",
+				"environmental impact"
+			],
+			"fetched_texts": [
+				{
+					"id": 21,
+					"text": "Proposal for new EV line: Implement closed-loop water recycling system for paint shop, projected to reduce water consumption by 30%. Additionally, explore solar panel installation on factory roof to offset energy usage. Key areas: water recycling, solar energy.",
+					"source": "llm",
+					"highlights": [
+						"closed-loop water recycling",
+						"solar panel installation",
+						"water consumption by 30%"
+					],
+					"metadata": {
+						"description": "Sustainability proposal for new EV line.",
+						"reviewed_by": "Sustainability Lead",
+						"confidence_score": 0.93
+					}
+				}
+			],
+			"selected_texts": [],
+			"evaluated": false
+		}
+	],
+	"all_texts": [
+		{
+			"id": 1,
+			"text": "Proposal suggests implementing **AGVs** (Automated Guided Vehicles) for material transport between stations 3 and 4 on Line A. This change is projected to yield an estimated cycle time reduction of approximately 5%. \n\nHowever, it's crucial to note that this *Requires significant infrastructure change*, including potential floor modifications and integration with the central control system. \n\n Key metrics comparison:\n - Current cycle time (CT): 55 seconds per unit\n - Projected CT post-AGV: 52 seconds per unit\n\nFurther considerations involve potential bottleneck shifts downstream and the need for robust safety protocols. Concerns about integration with the existing Manufacturing Execution System (MES) must be addressed during the planning phase to ensure seamless data flow and operational visibility. The automation level increase is significant.",
+			"metadata": {
+				"description": "AGV proposal for Line A material transport.",
+				"reviewed_by": "Automation Engineer",
+				"confidence_score": 0.84
+			}
+		},
+		{
+			"id": 2,
+			"text": "Detailed analysis of Line A performance data clearly indicates a major bottleneck at the chassis marriage station (Station 5). The current throughput of the entire line is significantly limited by the manual alignment process required at this stage. \n\nRecommendation: Initiate a feasibility study to investigate the implementation of a robotic arm solution equipped with an advanced vision system for automated alignment. \n\nPreliminary calculations suggest a _Potential Return on Investment (ROI)_ within 18 months, primarily driven by increased throughput and reduced labor costs associated with manual alignment. This automation step is critical. **See Appendix B for comprehensive technical specifications and cost breakdown.** Further analysis should model the impact on upstream and downstream cycle time.",
+			"metadata": {
+				"description": "Bottleneck analysis at Station 5.",
+				"reviewed_by": "Process Analyst",
+				"confidence_score": 0.92
+			}
+		},
+		{
+			"id": 3,
+			"text": "Reducing cycle time below 50s for Line A seems unfeasible without major retooling. Focus should be on eliminating unscheduled downtime and addressing the Station 5 bottleneck. Minor automation upgrades at paint shop interface planned for Q3.",
+			"metadata": {
+				"description": "Cycle time reduction constraints for Line A.",
+				"reviewed_by": "Production Manager",
+				"confidence_score": 0.79
+			}
+		},
+		{
+			"id": 4,
+			"text": "The simulation model highlights the bottleneck at Station 5. Increasing buffer size before this station might mitigate some throughput loss but doesn't solve the core cycle time issue. Full automation is the long-term solution. *Misaligned text block start.* \n\n This section details the simulation parameters used.",
+			"metadata": {
+				"description": "Simulation model for Station 5 bottleneck.",
+				"reviewed_by": "Simulation Specialist",
+				"confidence_score": 0.8
+			}
+		},
+		{
+			"id": 5,
+			"text": "A recent pilot project on Line A introduced predictive maintenance sensors on critical automation equipment. Early results show a 12% reduction in unplanned downtime, contributing to improved throughput and more stable cycle times. Expansion of this program is recommended.",
+			"metadata": {
+				"description": "Predictive maintenance pilot results.",
+				"reviewed_by": "Maintenance Lead",
+				"confidence_score": 0.87
+			}
+		},
+		{
+			"id": 6,
+			"text": "Case study: A comparable EV assembly line achieved a 7% increase in throughput by optimizing workstation layout and reducing walking distances for operators. Simulation tools were used to identify inefficiencies and test layout changes before implementation.",
+			"metadata": {
+				"description": "Case study on workstation layout optimization.",
+				"reviewed_by": "Industrial Engineer",
+				"confidence_score": 0.91
+			}
+		},
+		{
+			"id": 7,
+			"text": "Implementation of a digital twin for Line A is under consideration. This would enable real-time monitoring and scenario analysis for cycle time, bottleneck prediction, and automation impact assessment. Initial investment is high, but long-term benefits include faster optimization cycles.",
+			"metadata": {
+				"description": "Digital twin proposal for Line A.",
+				"reviewed_by": "Digitalization Lead",
+				"confidence_score": 0.86
+			}
+		},
+		{
+			"id": 8,
+			"text": "Analysis of downtime logs reveals that material shortages at Station 2 occasionally disrupt the flow of Line A. Integration of real-time inventory tracking with the MES could help prevent these interruptions and support higher throughput.",
+			"metadata": {
+				"description": "Downtime analysis and inventory tracking.",
+				"reviewed_by": "Inventory Specialist",
+				"confidence_score": 0.83
+			}
+		},
+		{
+			"id": 9,
+			"text": "A review of maintenance logs shows that unscheduled downtime at Station 7 is primarily due to sensor misalignment. Upgrading to more robust sensor mounts is recommended to improve reliability.",
+			"metadata": {
+				"description": "Sensor misalignment and recommended upgrades.",
+				"reviewed_by": "Maintenance Engineer",
+				"confidence_score": 0.8
+			}
+		},
+		{
+			"id": 10,
+			"text": "The current MES lacks real-time alerting for cycle time deviations. Adding this feature could enable faster response to emerging bottlenecks, especially at critical stations.",
+			"metadata": {
+				"description": "MES alerting feature proposal.",
+				"reviewed_by": "MES Developer",
+				"confidence_score": 0.78
+			}
+		},
+		{
+			"id": 11,
+			"text": "Operator feedback indicates that ergonomic improvements at Station 4 have reduced fatigue and minor stoppages. Further study is needed to quantify the impact on overall cycle time.",
+			"metadata": {
+				"description": "Ergonomic improvements and operator feedback.",
+				"reviewed_by": "Ergonomics Specialist",
+				"confidence_score": 0.81
+			}
+		},
+		{
+			"id": 12,
+			"text": "A recent kaizen event focused on the paint shop interface identified several quick wins, including improved part staging and reduced manual handling. Implementation is scheduled for next quarter.",
+			"metadata": {
+				"description": "Kaizen event outcomes for paint shop.",
+				"reviewed_by": "Continuous Improvement Lead",
+				"confidence_score": 0.85
+			}
+		},
+		{
+			"id": 13,
+			"text": "Throughput simulations show that increasing the number of parallel workstations at Station 6 could yield a 5% cycle time reduction, but space constraints are a limiting factor.",
+			"metadata": {
+				"description": "Throughput simulation for Station 6.",
+				"reviewed_by": "Simulation Analyst",
+				"confidence_score": 0.82
+			}
+		},
+		{
+			"id": 14,
+			"text": "Analysis of shift data reveals that cycle time variability is highest during shift changes. Standardizing shift handover procedures may help stabilize throughput.",
+			"metadata": {
+				"description": "Shift handover procedure analysis.",
+				"reviewed_by": "Operations Manager",
+				"confidence_score": 0.79
+			}
+		},
+		{
+			"id": 15,
+			"text": "Recent audit of Supplier X (Tier 1, battery cells) revealed minor non-conformances in quality control documentation. Corrective action plan requested. No immediate production impact, but elevates long-term supplier risk. **Follow-up audit scheduled for Q4.**",
+			"metadata": {
+				"description": "Supplier X audit summary.",
+				"reviewed_by": "QA Analyst",
+				"confidence_score": 0.86
+			}
+		},
+		{
+			"id": 16,
+			"text": "The ongoing global semiconductor shortage continues to pose a significant and persistent supplier risk to our production schedules. Current mitigation strategies include actively pursuing dual-sourcing agreements for key Microcontroller Units (MCUs) and initiating research into alternative component architectures that may be less susceptible to supply chain disruptions. \n\nOur current quality control processes for semiconductors rely heavily on incoming inspection procedures. This reactive approach needs to be augmented. \n\nRecommendation: We must push for more comprehensive supplier-side testing and data sharing agreements to proactively identify potential quality issues before components reach our facilities. This is especially critical for components related to the battery management system. An audit of supplier testing capabilities is recommended. \n\n*Markdown list attempt:*\n* Item 1: Dual source MCU vendor A.\n* Item 2: Evaluate alternative architecture B.",
+			"metadata": {
+				"description": "Semiconductor shortage and mitigation strategies.",
+				"reviewed_by": "Supply Chain Lead",
+				"confidence_score": 0.9
+			}
+		},
+		{
+			"id": 17,
+			"text": "Supplier Y (Tier 2, semiconductor packaging) failed their last audit. High supplier risk identified. Immediate action: Place supplier on probation, initiate search for alternative. Potential impact on battery management system production within 6 months.",
+			"metadata": {
+				"description": "Supplier Y audit failure and risk.",
+				"reviewed_by": "Risk Manager",
+				"confidence_score": 0.78
+			}
+		},
+		{
+			"id": 18,
+			"text": "Improving quality control requires better data sharing with suppliers. The current portal lacks real-time capabilities. An audit of the data exchange process is recommended. This impacts both battery and semiconductor supply chains. Reducing supplier risk needs investment here.",
+			"metadata": {
+				"description": "Quality control and data sharing portal review.",
+				"reviewed_by": "IT Integrator",
+				"confidence_score": 0.82
+			}
+		},
+		{
+			"id": 19,
+			"text": "Supplier quality assurance is a critical component of risk management in the automotive industry, particularly for high-value and technologically complex components such as battery packs and semiconductors. Effective quality control processes must extend beyond incoming inspection to include regular supplier audits, comprehensive data sharing agreements, and proactive risk mitigation strategies. For example, dual-sourcing agreements for key microcontroller units (MCUs) can help reduce the risk of supply chain disruptions caused by global semiconductor shortages. Additionally, investing in supplier-side testing capabilities and real-time data exchange platforms can enable earlier detection of potential quality issues, thereby reducing the likelihood of production delays or recalls. It is also important to consider the geopolitical and economic factors that may impact the availability of critical raw materials, and to develop contingency plans accordingly. By fostering strong relationships with suppliers and maintaining rigorous quality standards, manufacturers can ensure the reliability and performance of their products while minimizing exposure to supplier-related risks.",
+			"metadata": {
+				"description": "Overview of supplier QA best practices.",
+				"reviewed_by": "Industry Expert",
+				"confidence_score": 0.95
+			}
+		},
+		{
+			"id": 20,
+			"text": "Logistics and warehousing play a pivotal role in supporting just-in-time (JIT) delivery models and optimizing space utilization for new powertrain components. The adoption of real-time GPS tracking systems, integrated with both internal inventory management and external logistics provider platforms, enables more accurate monitoring of shipments and reduces the need for excessive buffer inventory. This, in turn, can free up valuable warehouse space and delay the need for costly expansions. However, implementing such systems requires significant investment in API integration and data infrastructure, as well as close collaboration with logistics partners. Additionally, optimizing warehouse layouts and inventory management software can further reduce costs and improve operational efficiency. It is essential to balance the benefits of stricter JIT protocols with the potential risks of line stoppages due to delayed deliveries. Continuous analysis of logistics costs, space utilization, and process bottlenecks is necessary to ensure that the supply chain remains agile and responsive to changing production demands.",
+			"metadata": {
+				"description": "JIT logistics and warehouse optimization.",
+				"reviewed_by": "Logistics Analyst",
+				"confidence_score": 0.88
+			}
+		},
+		{
+			"id": 21,
+			"text": "Proposal for new EV line: Implement closed-loop water recycling system for paint shop, projected to reduce water consumption by 30%. Additionally, explore solar panel installation on factory roof to offset energy usage. Key areas: water recycling, solar energy.",
+			"metadata": {
+				"description": "Sustainability proposal for new EV line.",
+				"reviewed_by": "Sustainability Lead",
+				"confidence_score": 0.93
+			}
+		}
+	]
 }
