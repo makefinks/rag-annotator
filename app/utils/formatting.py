@@ -1,72 +1,83 @@
 import logging
 import markdown
 from bs4 import BeautifulSoup
+import re
 
 # Set up basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
-def fix_markdown_table(text: str):
+def fix_markdown_table(text: str) -> str:
     """
-    Fixes markdown tables with cells spanning multiple lines while preserving
-    any non-table text before, between, or after the table.
-    
-    Logic:
-      - A line containing a pipe ('|') starts (or continues) a table row.
-      - If a line does not contain a pipe but directly follows a table row (i.e.,
-        we have buffered a row) and is not blank, we assume it's a continuation.
-      - If a blank line is encountered while a table row is in progress,
-        flush the current row, then output the blank line.
-      - Non-table lines (when not buffering a table row) are output as-is.
-      
-    This heuristic assumes that table rows are contiguous and that any non‐empty,
-    non‑pipe line following a table row is indeed part of that row.
-    """
-    text = text.replace('\r\n', '\n') 
-    text = text.replace('\n\n', '\n') 
+    Preprocesses a block of Markdown text to repair tables that contain
+    multi-line cells or rows broken over several lines.
 
-    def process_row(row):
-        # Split on '|' and remove extraneous spaces & empty parts.
-        parts = [cell.strip() for cell in row.split('|') if cell.strip() != '']
+    The function attempts to:
+      - Detect table rows that span multiple lines (e.g., a table cell's contents
+        continues on lines that do not start with a '|').
+      - Join such lines together so that each table row appears as a single line,
+        enabling standard Markdown parsers to interpret the table correctly.
+      - Preserve all blank lines and non-table text outside tables, so that paragraphs,
+        lists, and multiple tables remain correctly separated in the output.
+
+    Args:
+        text (str): Markdown source text that may contain tables with line breaks.
+
+    Returns:
+        str: Markdown text with tables rewritten so that each table row is on one line,
+             and all non-table content and blank lines preserved.
+    """
+
+    def process_row(row: str) -> str:
+        parts = [
+            cell.strip()  # trim
+            for cell in re.split(r"(?<!\\)\|", row)  # ignore \| escapes
+            if cell.strip() != ""
+        ]
         return "| " + " | ".join(parts) + " |"
-    
-    lines = text.splitlines()
-    result_lines = []
+
+    lines = text.replace("\r\n", "\n").splitlines()
+    result = []
     current_row = None
 
     for line in lines:
-        if '|' in line:
-            # Found a table line.
-            stripped = line.strip()
+        if "|" in line:
+            stripped = line.rstrip()
             if current_row is None:
-                # Starting a new row.
                 current_row = stripped
             else:
-                # If the buffer already ends with a pipe, we consider that row complete.
-                # Otherwise, assume the line is a continuation of the current row.
-                if current_row.rstrip().endswith('|'):
-                    result_lines.append(process_row(current_row))
+                # If the buffered row is already closed (ends with '|'),
+                # push it and start a new one. Otherwise, we’re still
+                # collecting a multi-line cell.
+                if current_row.rstrip().endswith("|"):
+                    result.append(process_row(current_row))
                     current_row = stripped
                 else:
                     current_row += " " + stripped
         else:
-            # No pipe in this line.
             if current_row is not None:
-                # If the line isn't blank, consider it a continuation of the table row.
-                if line.strip():
-                    current_row += " " + line.strip()
-                else:
-                    # A blank line implies the table row ended.
-                    result_lines.append(process_row(current_row))
+                if current_row.rstrip().endswith("|"):
+                    # Row complete -> flush before handling this line
+                    result.append(process_row(current_row))
                     current_row = None
-                    result_lines.append(line)
+                    result.append(line)
+                else:
+                    # Continuation of an open cell – unless its blank
+                    if line.strip():
+                        current_row += " " + line.strip()
+                    else:
+                        result.append(process_row(current_row))
+                        current_row = None
+                        result.append(line)
             else:
-                result_lines.append(line)
-    
+                result.append(line)
+
     if current_row is not None:
-        result_lines.append(process_row(current_row))
-    
-    return "\n".join(result_lines)
+        result.append(process_row(current_row))
+
+    return "\n".join(result)
 
 
 def format_md_text_to_html(text: str) -> str:
@@ -76,18 +87,19 @@ def format_md_text_to_html(text: str) -> str:
     Applies !important styling to table elements for visible borders.
     """
     fixed_text = fix_markdown_table(text)
-    html = markdown.markdown(fixed_text, extensions=['tables', 'fenced_code'])
-    soup = BeautifulSoup(html, 'html.parser')
+    html = markdown.markdown(fixed_text, extensions=["tables", "fenced_code"])
+    soup = BeautifulSoup(html, "html.parser")
 
     # Apply styles to table, th, and td
-    for table in soup.find_all('table'):
-        table['style'] = 'border-collapse: collapse !important; border: 1px solid black !important;'
+    for table in soup.find_all("table"):
+        table["style"] = (
+            "border-collapse: collapse !important; border: 1px solid black !important;"
+        )
 
-    for th in soup.find_all('th'):
-        th['style'] = 'border: 1px solid black !important; padding: 4px !important;'
+    for th in soup.find_all("th"):
+        th["style"] = "border: 1px solid black !important; padding: 4px !important;"
 
-    for td in soup.find_all('td'):
-        td['style'] = 'border: 1px solid black !important; padding: 4px !important;'
+    for td in soup.find_all("td"):
+        td["style"] = "border: 1px solid black !important; padding: 4px !important;"
 
     return str(soup)
-    
