@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QComboBox,
     QStyle,
+    QMessageBox,
 )
 from PySide6.QtCore import Qt, Signal
 
@@ -112,8 +113,17 @@ class TopPanel(QWidget):
         self.navigator_changed.emit(index)
     
     def _on_remove_clicked(self):
-        """Handle remove button click."""
-        self.remove_point_clicked.emit()
+        """Handle remove button click by confirming with the user."""
+        reply = QMessageBox.question(
+            self,
+            "Remove Point",
+            "Are you sure you want to remove this point? "
+            "This action will remove the point from the source file and is not reversible.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply == QMessageBox.Yes:
+            self.remove_point_clicked.emit()
     
     def set_position_text(self, text):
         """Set the position label text."""

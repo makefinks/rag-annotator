@@ -142,17 +142,3 @@ def highlight_keywords(
                 already_marked.append((s, s + len(replacement)))
 
     return result
-
-
-text = (
-    "The quick brown fox jumps over the lazi dog. "
-    "Artificial intelligence techniques such as Deep Learning are revolutionising industries."
-)
-
-keywords = [
-    "fox jum-ps over",
-    "artificial inteligence",
-    "Deep Learning",
-]
-
-print(highlight_keywords(text, keywords, "#ffff00"))
