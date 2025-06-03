@@ -382,9 +382,12 @@ class AnnotationApp(QWidget):
                                 self.ITEM_HIGHLIGHT_COLOR,
                             )
                         
-                        if temp_keywords:
+                        # Combine original point keywords with temporary keywords
+                        original_keywords = point_data.get("keywords", [])
+                        all_keywords = list(set(original_keywords + temp_keywords))
+                        if all_keywords:
                             temp_highlighted_text = highlight_keywords(
-                                temp_highlighted_text, temp_keywords, self.HIGHLIGHT_COLOR
+                                temp_highlighted_text, all_keywords, self.HIGHLIGHT_COLOR
                             )
                         
                         formatted_text = format_md_text_to_html(temp_highlighted_text)
