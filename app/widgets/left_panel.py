@@ -81,6 +81,15 @@ class LeftPanel(QWidget):
             if isinstance(widget, ListItemWidget):
                 widget.set_enabled_state(enabled)
     
+    def get_all_items(self):
+        """Get all ListItemWidget instances in the panel."""
+        items = []
+        for i in range(self.list_layout.count()):
+            widget = self.list_layout.itemAt(i).widget()
+            if isinstance(widget, ListItemWidget):
+                items.append(widget)
+        return items
+    
     @Slot(QWidget)
     def _on_item_clicked(self, item_widget):
         """Handle item click."""

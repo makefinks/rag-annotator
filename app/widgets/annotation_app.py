@@ -88,6 +88,7 @@ class AnnotationApp(QWidget):
         self.top_panel = TopPanel()
         self.top_panel.navigator_changed.connect(self._navigate_via_navigator)
         self.top_panel.remove_point_clicked.connect(self._remove_point)
+        self.top_panel.temp_keywords_changed.connect(self._on_temp_keywords_changed)
         self.main_layout.addWidget(self.top_panel)
 
         # Middle Panels (Left and Right in a Splitter)
@@ -186,10 +187,7 @@ class AnnotationApp(QWidget):
         # --- Populate Description ---
         keywords = point_data.get("keywords", [])
         description = point_data.get("description", "No description provided.")
-        highlighted_description = highlight_keywords(
-            description, keywords, self.HIGHLIGHT_COLOR
-        )
-        self.top_panel.set_description_text(highlighted_description)
+        self.top_panel.set_description_text(description, keywords)
 
         # --- Populate Left Panel (Fetched Texts) ---
         is_evaluated = point_data.get("evaluated", False)
@@ -357,6 +355,41 @@ class AnnotationApp(QWidget):
             self._save_ground_truth()
             # Load the selected point
             self._load_point(target_point_index)
+    
+    @Slot(list)
+    def _on_temp_keywords_changed(self, temp_keywords):
+        """Handle changes in temporary keyword selection from description."""
+        if self.current_point_index is None or not self.ground_truth_data["points"]:
+            return
+            
+        point_data = self.ground_truth_data["points"][self.current_point_index]
+        
+        # Re-highlight all fetched texts with new temporary keywords
+        for item_widget in self.left_panel.get_all_items():
+            if hasattr(item_widget, 'item_id'):
+                # Find the corresponding item data
+                for item_data in point_data.get("fetched_texts", []):
+                    if item_data.get("id") == item_widget.item_id:
+                        text = item_data.get("text", "")
+                        item_specific_highlights = item_data.get("highlights", [])
+                        
+                        # Apply highlighting: item-specific first, then temp keywords
+                        temp_highlighted_text = text
+                        if item_specific_highlights:
+                            temp_highlighted_text = highlight_keywords(
+                                temp_highlighted_text,
+                                item_specific_highlights,
+                                self.ITEM_HIGHLIGHT_COLOR,
+                            )
+                        
+                        if temp_keywords:
+                            temp_highlighted_text = highlight_keywords(
+                                temp_highlighted_text, temp_keywords, self.HIGHLIGHT_COLOR
+                            )
+                        
+                        formatted_text = format_md_text_to_html(temp_highlighted_text)
+                        item_widget.set_text(formatted_text)
+                        break
 
     @Slot(str)
     def perform_bm25_search(self, search_query=None):
@@ -415,13 +448,17 @@ class AnnotationApp(QWidget):
                 continue
 
             # Determine terms to highlight based on original logic
+            # Use temporary keywords from description if available
+            temp_keywords = self.top_panel.get_temp_selected_words()
+            effective_keywords = temp_keywords if temp_keywords else keywords
+            
             terms_to_highlight_in_bm25 = []
             search_terms_list = [term for term in search_query.split() if term.strip()]
 
             if search_query and len(search_terms_list) == 1:
-                terms_to_highlight_in_bm25 = list(set(keywords + search_terms_list))
+                terms_to_highlight_in_bm25 = list(set(effective_keywords + search_terms_list))
             else:
-                terms_to_highlight_in_bm25 = list(set(keywords))
+                terms_to_highlight_in_bm25 = list(set(effective_keywords))
 
             highlighted_text = highlight_keywords(
                 result_text, terms_to_highlight_in_bm25, self.HIGHLIGHT_COLOR
